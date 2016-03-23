@@ -15,24 +15,19 @@
 #
 ############################################################################
 
+AR = ${CROSS_COMPILE}ar
+CC = ${CROSS_COMPILE}gcc
 
-all:
-	cd Library;  make all
-	cd Tests;    make all
-	cd Examples; make all
+LTKC_DIR = .
+LTKC_LIBS = $(LTKC_DIR)/Library/libltkc.a
+LTKC_INCL = -I$(LTKC_DIR)/Library
+CFLAGS = -g $(LTKC_INCL)
+TARGET = moo_concrete_reader
 
-everything:
-	cd Library;  make everything
-	cd Tests;    make everything
-	cd Examples; make everything
-
-release:
-	make everything
-	cd Release; make all
+$(TARGET) : moo_concrete_reader.c
+	$(CC) $(CFLAGS) -o moo_concrete_reader moo_concrete_reader.c $(LTKC_LIBS)
 
 clean:
-	cd Library;  make clean
-	cd Tests;    make clean
-	cd Examples; make clean
-	cd Release;  make clean
-	rm -f *.o *.core core.[0-9]*
+	-rm -f $(TARGET) Mon_* Tue_* Wed_* Thu_* Fri_* Sat_* Sun_*
+
+.PHONY: clean

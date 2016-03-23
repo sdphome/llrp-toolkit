@@ -16,8 +16,8 @@
 ############################################################################
 
 #CFLAGS = -O -Wall
-AR              = ar
-CC              = gcc
+AR              = ${CROSS_COMPILE}ar
+CC              = ${CROSS_COMPILE}gcc
 CFLAGS          = -g -Wall
 CINCLUDES	= `pkg-config libxml-2.0 --cflags`
 
