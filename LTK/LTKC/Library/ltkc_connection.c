@@ -332,6 +332,112 @@ LLRP_Conn_openConnectionToReader (
     return 0;
 }
 
+/**
+ *****************************************************************************
+ **
+ ** @brief  Start server for the upper
+ **
+ ** The steps:
+ **     - Look up the host name
+ **     - Create a socket
+ **     - Connect to the host address
+ **     - Condition the socket (set options)
+ **
+ ** @param[in]  pConn           Pointer to the connection instance.
+ **
+ ** @return     >0              Connected OK, ready for business
+ **             <=0             Error, check LLRP_Conn_getConnectError()
+ **                             for reason
+ **
+ *****************************************************************************/
+
+int
+LLRP_Conn_startServerForUpper (
+  LLRP_tSConnection *           pConn)
+{
+    int                         Sock;
+    static const struct addrinfo AddrInfoMask;
+    int                         Flag;
+    struct sockaddr_in          Sin;
+    int                         Rc;
+
+    /*
+     * Clear the connect error string
+     */
+    pConn->pConnectErrorStr = NULL;
+
+    /*
+     * Make sure there isn't already a connection.
+     */
+    if(0 <= pConn->fd)
+    {
+        pConn->pConnectErrorStr = "already connected";
+        return -1;
+    }
+
+    /*
+     * Convert the address to sockaddr_in format
+     */
+    memset(&Sin, 0, sizeof Sin);
+    Sin.sin_family = AF_INET;
+    Sin.sin_addr = htonl(INADDR_ANY);
+    Sin.sin_port = htons(LLRP1_TCP_PORT);
+
+    /*
+     * Create the socket.
+     */
+    Sock = socket(AF_INET, SOCK_STREAM, 0);
+    if(0 > Sock)
+    {
+        pConn->pConnectErrorStr = "socket() failed";
+        return -2;
+    }
+
+	/*
+	 * Bind the address to socket
+	 */
+	Rc = bind(Sock, (struct sockaddr*)&Sin, sizeof(Sin));
+    if(0 > Rc)
+    {
+        /* Bind failed */
+        pConn->pConnectErrorStr = "bind() failed";
+        close(Sock);
+        return -3;
+    }
+
+	Rc = listen(Sock, 1);
+	if (0 > Rc)
+	{
+		/* Listen failed */
+		pConn->pConnectErrorStr = "listen() failed";
+		close(Sock);
+		return -4;
+	}
+
+	/*
+	 * Record the socket in the connection instance
+	 */
+	pConn->fd = accept(Sock, (struct sockaddr*)NULL, NULL);
+	if (0 > pConn->fd)
+	{
+		/* Accept failed */
+		pConn->pConnectErrorStr = "accept() failed";
+		close(Sock);
+		return -5;
+	}
+
+    /*
+     * Best effort to set no delay. If this doesn't work
+     * (no reason it shouldn't) we do not declare defeat.
+     */
+    Flag = 1;
+    setsockopt(Sock, IPPROTO_TCP, TCP_NODELAY, (void*)&Flag, sizeof Flag);
+
+    /*
+     * Victory
+     */
+    return Sock;
+}
 
 /**
  *****************************************************************************
