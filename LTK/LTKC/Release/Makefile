@@ -43,7 +43,7 @@ std: $(LTKC_FILES) $(EXAMPLE_FILES)
 	mkdir std/libltkc
 	chmod 777 std/libltkc
 	cp $(LTKC_FILES) std/libltkc/.
-	cp -p $(LIBXML2_LIBS) std/libltkc/
+#	cp -p $(LIBXML2_LIBS) std/libltkc/
 	chmod 444 std/libltkc/*
 	mkdir std/libltkc/example
 	cp ../Examples/example1.c std/libltkc/example/example1.c

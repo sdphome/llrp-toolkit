@@ -19,8 +19,8 @@ LIBDIR=../Library
 INCL = -I$(LIBDIR) `pkg-config libxml-2.0 --cflags`
 
 #CFLAGS = -O -Wall $(INCL)
-AR          = ar
-CC          = gcc
+AR          = ${CROSS_COMPILE}ar
+CC          = ${CROSS_COMPILE}gcc
 CFLAGS      = -g -Wall $(INCL)
 
 LTKC_LIB = $(LIBDIR)/libltkc.a

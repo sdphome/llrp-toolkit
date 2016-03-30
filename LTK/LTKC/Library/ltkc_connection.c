@@ -380,7 +380,7 @@ LLRP_Conn_startServerForUpper (
      */
     memset(&Sin, 0, sizeof Sin);
     Sin.sin_family = AF_INET;
-    Sin.sin_addr = htonl(INADDR_ANY);
+    Sin.sin_addr.s_addr = htonl(INADDR_ANY);
     Sin.sin_port = htons(LLRP1_TCP_PORT);
 
     /*
