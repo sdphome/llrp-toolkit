@@ -21,7 +21,8 @@ CC              = ${CROSS_COMPILE}gcc
 CFLAGS          = -g -Wall
 CINCLUDES	= `pkg-config libxml-2.0 --cflags`
 
-LLRPDEF         = ../../Definitions/Core/llrp-1x0-def.xml
+#LLRPDEF         = ../../Definitions/Core/llrp-1x0-def.xml
+LLRPDEF         = ../../Definitions/Core/uhf-reader--1x35-def.xml
 
 CODE_GEN_H_XSLT = ltkc_gen_h.xslt
 CODE_GEN_C_XSLT = ltkc_gen_c.xslt
@@ -53,11 +54,11 @@ LTKC_OBJS = \
 	ltkc_genout.o
 
 
-all:    $(LTKC_LIB)
-	cd LLRP.org; make all
+#all:    $(LTKC_LIB)
+#	cd LLRP.org; make all
 
-everything:
-	make all
+#everything:
+#	make all
 
 $(LTKC_LIB) : $(LTKC_OBJS)
 	$(AR) crv $(LTKC_LIB) $(LTKC_OBJS)
