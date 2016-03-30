@@ -459,6 +459,36 @@ LLRP_Conn_getConnectError (
     return pConn->pConnectErrorStr;
 }
 
+/**
+ *****************************************************************************
+ **
+ ** @brief  Close connection to upper, allow reuse of instance
+ **
+ ** @param[in]  pConn           Pointer to the connection instance.
+ **
+ ** @return     ==0             Connected OK, ready for business
+ **             !=0             Error, check getConnectError() for reason
+ **
+ *****************************************************************************/
+
+int
+LLRP_Conn_closeConnectionToUpper (
+  LLRP_tSConnection *           pConn)
+{
+    if(0 > pConn->fd)
+    {
+        pConn->pConnectErrorStr = "not connected";
+        return -1;
+    }
+
+    shutdown(pConn->fd, SHUT_RDWR);
+
+    close(pConn->fd);
+
+    pConn->fd = -1;
+
+    return 0;
+}
 
 /**
  *****************************************************************************
