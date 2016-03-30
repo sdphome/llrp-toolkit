@@ -24,6 +24,23 @@
 
 
 
+LLRP_tSFieldDescriptor
+LLRP_g_fdMessageHeader_DeviceSN =
+{
+    .eFieldType     = LLRP_FT_U64,
+    .eFieldFormat   = LLRP_FMT_NORMAL,
+    .pName          = "MessageHeader.DeviceSN",
+    .pEnumTable     = NULL
+};
+
+LLRP_tSFieldDescriptor
+LLRP_g_fdMessageHeader_Version =
+{
+    .eFieldType     = LLRP_FT_U8,
+    .eFieldFormat   = LLRP_FMT_NORMAL,
+    .pName          = "MessageHeader.Version",
+    .pEnumTable     = NULL
+};
 
 LLRP_tSFieldDescriptor
 LLRP_g_fdMessageHeader_Type =

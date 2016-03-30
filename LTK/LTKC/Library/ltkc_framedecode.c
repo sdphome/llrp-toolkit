@@ -1233,8 +1233,9 @@ decodeMessage (
     LLRP_tSDecoderStream *      pBaseDecoderStream =
                                         &pDecoderStream->decoderStreamHdr;
     const LLRP_tSTypeDescriptor *pTypeDescriptor;
+    llrp_u64_t                  DeviceSN;
     llrp_u16_t                  Type;
-    llrp_u16_t                  Vers;
+    llrp_u8_t                   Version;
     llrp_u32_t                  nLength;
     unsigned int                iLimit;
     llrp_u32_t                  MessageID;
@@ -1246,16 +1247,15 @@ decodeMessage (
         return NULL;
     }
 
-    Type = get_u16(pBaseDecoderStream, &LLRP_g_fdMessageHeader_Type);
-    Vers = (Type >> 10u) & 3;
-    Type &= 0x3FF;
+    DeviceSN = get_u64(pBaseDecoderStream, &LLRP_g_fdMessageHeader_DeviceSN);
+    Version = get_u8(pBaseDecoderStream, &LLRP_g_fdMessageHeader_Version);
 
     if(LLRP_RC_OK != pError->eResultCode)
     {
         return NULL;
     }
 
-    if(1u != Vers)
+    if(1u != Version)
     {
         pError->eResultCode = LLRP_RC_BadVersion;
         pError->pWhatStr    = "unsupported version";
@@ -1265,6 +1265,7 @@ decodeMessage (
         return NULL;
     }
 
+    Type = get_u16(pBaseDecoderStream, &LLRP_g_fdMessageHeader_Type);
     nLength = get_u32(pBaseDecoderStream, &LLRP_g_fdMessageHeader_Length);
 
     if(LLRP_RC_OK != pError->eResultCode)
@@ -1272,7 +1273,7 @@ decodeMessage (
         return NULL;
     }
 
-    if(10u > nLength)
+    if(19u > nLength)
     {
         pError->eResultCode = LLRP_RC_InvalidLength;
         pError->pWhatStr    = "message length too small";
@@ -1361,6 +1362,8 @@ decodeMessage (
     }
 
     pMessage = (LLRP_tSMessage *) pElement;
+    pMessage->DeviceSN = DeviceSN;
+    pMessage->Version = Version;
     pMessage->MessageID = MessageID;
 
     pTypeDescriptor->pfDecodeFields(pElement, pBaseDecoderStream);

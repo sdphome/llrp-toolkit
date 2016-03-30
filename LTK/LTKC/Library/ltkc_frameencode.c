@@ -1188,10 +1188,13 @@ putElement (
 
     case MSG:
         {
-            llrp_u16_t          VersType;
-
-            VersType = (1u << 10u) | pRefType->TypeNum;
-            put_u16(pBaseEncoderStream, VersType,
+            put_u64(pBaseEncoderStream,
+                ((const LLRP_tSMessage *)pElement)->DeviceSN,
+                &LLRP_g_fdMessageHeader_DeviceSN);
+            put_u8(pBaseEncoderStream,
+                ((const LLRP_tSMessage *)pElement)->Version,
+                &LLRP_g_fdMessageHeader_Version);
+            put_u16(pBaseEncoderStream, pRefType->TypeNum,
                 &LLRP_g_fdMessageHeader_Type);
             put_u32(pBaseEncoderStream, 0,
                 &LLRP_g_fdMessageHeader_Length);
@@ -1271,6 +1274,13 @@ putElement (
         break;
 
     case MSG:
+        assert(nLength >= 19);
+        pLen += 11;
+        pLen[0] = nLength >> 24u;
+        pLen[1] = nLength >> 16u;
+        pLen[2] = nLength >> 8u;
+        pLen[3] = nLength >> 0u;
+		break;
     case CUST_MSG:
         assert(nLength >= 10);
         pLen += 2;
