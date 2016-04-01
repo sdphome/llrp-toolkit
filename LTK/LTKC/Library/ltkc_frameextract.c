@@ -39,32 +39,26 @@ LLRP_FrameExtract (
 
     memset(&frameExtract, 0, sizeof frameExtract);
 
-    if(10 > nBuffer)
+    if(19 > nBuffer)
     {
-        frameExtract.MessageLength = 10u;
+        frameExtract.MessageLength = 19u;
         frameExtract.nBytesNeeded = frameExtract.MessageLength - nBuffer;
         frameExtract.eStatus = LLRP_FRAME_NEED_MORE;
     }
     else
     {
-        llrp_u16_t                  VersType;
-
-        VersType = pBuffer[0];
-        VersType <<= 8u;
-        VersType |= pBuffer[1];
-
-        frameExtract.MessageLength = pBuffer[2];
+        frameExtract.MessageLength = pBuffer[11];
         frameExtract.MessageLength <<= 8u;
-        frameExtract.MessageLength |= pBuffer[3];
+        frameExtract.MessageLength |= pBuffer[12];
         frameExtract.MessageLength <<= 8u;
-        frameExtract.MessageLength |= pBuffer[4];
+        frameExtract.MessageLength |= pBuffer[13];
         frameExtract.MessageLength <<= 8u;
-        frameExtract.MessageLength |= pBuffer[5];
+        frameExtract.MessageLength |= pBuffer[14];
 
         /*
          * Should we be picky about reserved bits?
          */
-
+/*
         frameExtract.MessageType = VersType & 0x3FFu;
         frameExtract.ProtocolVersion = (VersType >> 10u) & 0x7u;
 
@@ -75,20 +69,15 @@ LLRP_FrameExtract (
         frameExtract.MessageID |= pBuffer[8];
         frameExtract.MessageID <<= 8u;
         frameExtract.MessageID |= pBuffer[9];
-
-        if(10u > frameExtract.MessageLength)
-        {
-            frameExtract.nBytesNeeded = frameExtract.MessageLength - nBuffer;
-            frameExtract.eStatus = LLRP_FRAME_ERROR;
-        }
-        else if(nBuffer >= frameExtract.MessageLength)
+*/
+		if(nBuffer >= frameExtract.MessageLength + 19u)
         {
             frameExtract.nBytesNeeded = 0;
             frameExtract.eStatus = LLRP_FRAME_READY;
         }
         else
         {
-            frameExtract.nBytesNeeded = frameExtract.MessageLength - nBuffer;
+            frameExtract.nBytesNeeded = frameExtract.MessageLength + 19 - nBuffer;
             frameExtract.eStatus = LLRP_FRAME_NEED_MORE;
         }
     }
