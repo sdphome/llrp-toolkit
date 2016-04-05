@@ -538,7 +538,7 @@ checkConnectionStatus (void)
         goto fail;
     }
 
-	printf("RECV timestamp: %ld.\n", (llrp_u64_t)pTimestamp->Microseconds);
+	printf("RECV timestamp: %lld.\n", (llrp_u64_t)pTimestamp->Microseconds);
 
 #if 0
     /*
