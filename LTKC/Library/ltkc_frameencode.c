@@ -1274,8 +1274,9 @@ putElement (
         break;
 
     case MSG:
-        assert(nLength >= 19);
+        assert(nLength >= 19u);
         pLen += 11;
+		nLength -= 19u;
         pLen[0] = nLength >> 24u;
         pLen[1] = nLength >> 16u;
         pLen[2] = nLength >> 8u;
@@ -1295,8 +1296,9 @@ putElement (
 
     case TLV:
     case CUST_TLV:
-        assert(nLength >= 4);
+        assert(nLength >= 4u);
         pLen += 2;
+		nLength -= 4u;
         pLen[0] = nLength >> 8u;
         pLen[1] = nLength >> 0u;
         break;

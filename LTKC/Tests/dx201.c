@@ -58,7 +58,7 @@
 #include <unistd.h>
 #endif
 
-#include "ltkc.h"
+#include "../Library/ltkc.h"
 
 
 /*
@@ -80,6 +80,7 @@ run (
 int
 checkConnectionStatus (void);
 
+# if 0
 int
 scrubConfiguration (void);
 
@@ -121,9 +122,10 @@ void
 printOneTagReportData (
   LLRP_tSTagReportData *        pTagReportData);
 
+#endif
 int
 checkLLRPStatus (
-  LLRP_tSLLRPStatus *           pLLRPStatus,
+  LLRP_tSStatus *           pLLRPStatus,
   char *                        pWhatStr);
 
 LLRP_tSMessage *
@@ -141,11 +143,11 @@ sendMessage (
 void
 freeMessage (
   LLRP_tSMessage *              pMessage);
-
+/*
 void
 printXMLMessage (
   LLRP_tSMessage *              pMessage);
-
+*/
 /*
  * END forward declarations
  */
@@ -385,7 +387,7 @@ run (
 
     if(g_Verbose)
     {
-        printf ("INFO: Connected, checking status....\n");
+        printf ("INFO: Connected, checking status, sockfd = %d....\n", pConn->fd);
     }
 
     /*
@@ -396,6 +398,8 @@ run (
     rc = 1;
     if(0 == checkConnectionStatus())
     {
+		printf("checkConnectionStatus success.\n");
+#if 0
         rc = 2;
         if(0 == scrubConfiguration())
         {
@@ -420,6 +424,7 @@ run (
             }
             scrubConfiguration();
         }
+#endif
     }
 
     if(g_Verbose)
@@ -491,9 +496,8 @@ int
 checkConnectionStatus (void)
 {
     LLRP_tSMessage *            pMessage;
-    LLRP_tSREADER_EVENT_NOTIFICATION *pNtf;
-    LLRP_tSReaderEventNotificationData *pNtfData;
-    LLRP_tSConnectionAttemptEvent *pEvent;
+    LLRP_tSDeviceEventNotification *pNtf;
+    LLRP_tSUTCTimestamp *pTimestamp;
 
     /*
      * Expect the notification within 10 seconds.
@@ -506,6 +510,7 @@ checkConnectionStatus (void)
      */
     if(NULL == pMessage)
     {
+		printf("pMessage is null.\n");
         /* recvMessage() already tattled. */
         goto fail;
     }
@@ -515,8 +520,9 @@ checkConnectionStatus (void)
      * The type label (pointer) in the message should be
      * the type descriptor for READER_EVENT_NOTIFICATION.
      */
-    if(&LLRP_tdREADER_EVENT_NOTIFICATION != pMessage->elementHdr.pType)
+    if(&LLRP_tdDeviceEventNotification != pMessage->elementHdr.pType)
     {
+		printf("type not match.\n");
         goto fail;
     }
 
@@ -524,13 +530,17 @@ checkConnectionStatus (void)
      * Now that we are sure it is a READER_EVENT_NOTIFICATION,
      * traverse to the ReaderEventNotificationData parameter.
      */
-    pNtf = (LLRP_tSREADER_EVENT_NOTIFICATION *) pMessage;
-    pNtfData = pNtf->pReaderEventNotificationData;
-    if(NULL == pNtfData)
+    pNtf = (LLRP_tSDeviceEventNotification *) pMessage;
+    pTimestamp = pNtf->pUTCTimestamp;
+    if(NULL == pTimestamp)
     {
+		printf("timestamp is null.\n");
         goto fail;
     }
 
+	printf("RECV timestamp: %ld.\n", (llrp_u64_t)pTimestamp->Microseconds);
+
+#if 0
     /*
      * The ConnectionAttemptEvent parameter must be present.
      */
@@ -548,7 +558,7 @@ checkConnectionStatus (void)
     {
         goto fail;
     }
-
+#endif
     /*
      * Done with the message
      */
@@ -596,7 +606,7 @@ checkConnectionStatus (void)
  **             !=0             Something went wrong
  **
  *****************************************************************************/
-
+#if 0
 int
 scrubConfiguration (void)
 {
@@ -1623,6 +1633,7 @@ enableROSpec (void)
     return 0;
 }
 
+#endif
 
 /**
  *****************************************************************************
@@ -1665,7 +1676,7 @@ enableROSpec (void)
  **             !=0             Something went wrong
  **
  *****************************************************************************/
-
+#if 0
 int
 startAndMonitorOperation (void)
 {
@@ -2036,7 +2047,7 @@ printOneTagReportData (
      */
     printf("\n");
 }
-
+#endif
 
 /**
  *****************************************************************************
@@ -2058,7 +2069,7 @@ printOneTagReportData (
 
 int
 checkLLRPStatus (
-  LLRP_tSLLRPStatus *           pLLRPStatus,
+  LLRP_tSStatus *           pLLRPStatus,
   char *                        pWhatStr)
 {
     /*
@@ -2138,6 +2149,7 @@ transact (
      * Print the XML text for the outbound message if
      * verbosity is 2 or higher.
      */
+#if 0
     if(1 < g_Verbose)
     {
         /* If -qq command option, do XML encode but don't actually print */
@@ -2148,7 +2160,7 @@ transact (
         }
         printXMLMessage(pSendMsg);
     }
-
+#endif
     /*
      * Send the message, expect the response of certain type.
      * If LLRP_Conn_transact() returns NULL then there was
@@ -2190,7 +2202,7 @@ transact (
             printf("\n- - - - - - - - - - - - - - - - - -\n");
             printf("INFO: Transact received response\n");
         }
-        printXMLMessage(pRspMsg);
+        //printXMLMessage(pRspMsg);
     }
 
     /*
@@ -2198,6 +2210,7 @@ transact (
      * when it can't understand the request), tattle
      * and declare defeat.
      */
+#if 0
     if(&LLRP_tdERROR_MESSAGE == pRspMsg->elementHdr.pType)
     {
         printf("ERROR: Received ERROR_MESSAGE instead of %s\n",
@@ -2205,7 +2218,7 @@ transact (
         freeMessage(pRspMsg);
         pRspMsg = NULL;
     }
-
+#endif
     return pRspMsg;
 }
 
@@ -2284,7 +2297,7 @@ recvMessage (
             printf("\n===================================\n");
             printf("INFO: Message received\n");
         }
-        printXMLMessage(pMessage);
+        //printXMLMessage(pMessage);
     }
 
     return pMessage;
@@ -2326,7 +2339,7 @@ sendMessage (
             printf("\n===================================\n");
             printf("INFO: Sending\n");
         }
-        printXMLMessage(pSendMsg);
+        //printXMLMessage(pSendMsg);
     }
 
     /*
@@ -2398,7 +2411,7 @@ freeMessage (
  ** @return     void
  **
  *****************************************************************************/
-
+#if 0
 void
 printXMLMessage (
   LLRP_tSMessage *              pMessage)
@@ -2426,3 +2439,4 @@ printXMLMessage (
         printf("%s", aBuf);
     }
 }
+#endif

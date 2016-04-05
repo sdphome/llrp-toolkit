@@ -1272,7 +1272,7 @@ decodeMessage (
     {
         return NULL;
     }
-
+/*
     if(19u > nLength)
     {
         pError->eResultCode = LLRP_RC_InvalidLength;
@@ -1282,8 +1282,8 @@ decodeMessage (
         pError->OtherDetail = pDecoder->iNext;
         return NULL;
     }
-
-    iLimit = pDecoderStream->iBegin + nLength;
+*/
+    iLimit = pDecoderStream->iBegin + nLength + 19u;
 
     if(iLimit > pDecoderStream->iLimit)
     {
@@ -1508,7 +1508,7 @@ decodeParameter (
             return NULL;
         }
 
-        iLimit = pDecoderStream->iBegin + nLength;
+        iLimit = pDecoderStream->iBegin + nLength + 4u;
 
         if(iLimit > pDecoderStream->iLimit)
         {

@@ -15,51 +15,20 @@
 #
 ############################################################################
 
-LIBDIR=../Library
-INCL = -I$(LIBDIR) `pkg-config libxml-2.0 --cflags`
+AR = ${CROSS_COMPILE}ar
+CC = ${CROSS_COMPILE}gcc
 
-#CFLAGS = -O -Wall $(INCL)
-AR          = ${CROSS_COMPILE}ar
-CC          = ${CROSS_COMPILE}gcc
-CFLAGS      = -g -Wall $(INCL)
+LTKC_DIR = .
+LTKC_LIBS =../Library/libltkc.a
+LTKC_INCL = -I ../Library
+CFLAGS = -g $(LTKC_INCL)
+TARGET = dx201
 
-LTKC_LIB = $(LIBDIR)/libltkc.a
-XML2_LIB = `pkg-config libxml-2.0 --libs`
-LTKC_HDRS = \
-	$(LIBDIR)/ltkc.h		\
-	$(LIBDIR)/ltkc_base.h		\
-	$(LIBDIR)/ltkc_connection.h	\
-	$(LIBDIR)/ltkc_frame.h		\
-	$(LIBDIR)/ltkc_platform.h	\
-	$(LIBDIR)/ltkc_xmltext.h	\
-	$(LIBDIR)/out_ltkc.h
-
-all: xml2llrp llrp2xml dx201
-
-everything:
-	make all
-
-llrp2xml.o : llrp2xml.c $(LTKC_HDRS)
-	$(CC) -c $(CFLAGS) llrp2xml.c -o llrp2xml.o
-
-llrp2xml : llrp2xml.o $(LTKC_LIB)
-	$(CC) $(CFLAGS) -o llrp2xml llrp2xml.o $(LTKC_LIB) $(XML2_LIB)
-
-xml2llrp.o : xml2llrp.c $(LTKC_HDRS)
-	$(CC) -c $(CFLAGS) xml2llrp.c -o xml2llrp.o
-
-xml2llrp : xml2llrp.o $(LTKC_LIB) $(XML2_LIB)
-	$(CC) $(CFLAGS) -o xml2llrp xml2llrp.o $(LTKC_LIB) $(XML2_LIB)
-
-dx201 : dx201.o $(LTKC_LIB)
-	$(CC) $(CFLAGS) -o dx201 dx201.o $(LTKC_LIB)
-
-dx201.o : dx201.c $(LTKC_HDRS)
-	$(CC) -c $(CFLAGS) dx201.c -o dx201.o
+$(TARGET) : dx201.c
+	$(CC) -o dx201 dx201.c $(LTKC_LIBS) $(LTKC_INCL)
 
 clean:
-	rm -f *.o *.core core.[0-9]*
-	rm -f *.tmp
-	rm -f xml2llrp
-	rm -f llrp2xml
-	rm -f dx201
+	rm -f $(TARGET) Mon_* Tue_* Wed_* Thu_* Fri_* Sat_* Sun_*
+	rm -rf *.o
+
+.PHONY: clean
