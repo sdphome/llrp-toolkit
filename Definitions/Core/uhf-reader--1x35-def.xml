@@ -1683,7 +1683,7 @@
           <h:p>This parameter carries the AntennaID information.</h:p>
       </description>
     </annotation>
-    <field     type="u16"   name="AntennaID"/>
+    <field     type="u8"   name="AntennaID"/>
   </parameterDefinition>
 
   <parameterDefinition name="PeakRSSI" typeNum="505" required="true">
@@ -2903,9 +2903,9 @@
     </annotation>
 	<field     type="u8"      name="ServerType"
                               enumeration="ServerType"/>
-	<field     type="utf8v"   name="Username"/>
-	<field     type="utf8v"   name="UserPass"/>
-	<field     type="utf8v"   name="VersionPath"/>
+	<field     type="u8v"   name="Username"/>
+	<field     type="u8v"   name="UserPass"/>
+	<field     type="u8v"   name="VersionPath"/>
 	<field     type="u16"     name="ServerPort"/>
 	<parameter repeat="1"     type="IPAddress"/>
   </parameterDefinition>
