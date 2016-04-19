@@ -2725,6 +2725,7 @@
     <entry     value="1"    name="ReadSystem"/>
     <entry     value="2"    name="SecurityModuleSystem"/>
     <entry     value="3"    name="SecurityChipSystem"/>
+    <entry     value="4"    name="RadioModule"/>
   </enumerationDefinition>
 
   <messageDefinition name="GetVersionAck" typeNum="701" required="true">
