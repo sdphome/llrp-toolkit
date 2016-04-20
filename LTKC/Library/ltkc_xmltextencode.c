@@ -885,8 +885,8 @@ put_u64 (
     case LLRP_FMT_DATETIME:
         {
             char                aBuf[64];
-            time_t              CurSec  = Value / 1000000u;
-            llrp_u32_t          CurUSec = Value % 1000000u;
+            time_t              CurSec  = Value / 1000u;
+            llrp_u32_t          CurUSec = (Value % 1000) * 1000u;
             struct tm *         pGMTime;
 
             pGMTime = gmtime(&CurSec);
