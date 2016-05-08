@@ -1151,6 +1151,7 @@ recvAdvance (
              * Read some number of bytes from the socket.
              */
             rc = read(pConn->fd, pBufPos, nRead);
+
             if(0 > rc)
             {
                 /*

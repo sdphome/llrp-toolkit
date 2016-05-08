@@ -37,8 +37,8 @@ LTKC_HDRS = \
 	ltkc_xmltext.h		\
 	out_ltkc.h
 
-#LTKC_LIB = libltkc.a
-LTKC_LIB = libltkc.so
+LTKC_LIB = libltkc.a
+#LTKC_LIB = libltkc.so
 LTKC_OBJS = \
 	ltkc_array.o		\
 	ltkc_connection.o	\
@@ -62,8 +62,8 @@ LTKC_OBJS = \
 #	make all
 
 $(LTKC_LIB) : $(LTKC_OBJS)
-	$(CC) -fPIC -shared -o $(LTKC_LIB) $(LTKC_OBJS)
-#	$(AR) crv $(LTKC_LIB) $(LTKC_OBJS)
+#	$(CC) -fPIC -shared -o $(LTKC_LIB) $(LTKC_OBJS)
+	$(AR) crv $(LTKC_LIB) $(LTKC_OBJS)
 
 $(LTKC_OBJS) : $(LTKC_HDRS)
 

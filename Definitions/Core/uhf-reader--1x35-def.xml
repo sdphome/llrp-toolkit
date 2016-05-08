@@ -1937,6 +1937,19 @@
     <parameter repeat="1"   type="Status"/>
   </messageDefinition>
 
+  <messageDefinition name="DeviceBindingResultNotification" typeNum="604" required="true">
+    <annotation>
+      <documentation>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=67&amp;view=fit">LLRP Specification Section 12.1.1</h:a>            
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=126&amp;view=fit">LLRP Specification Section 16.1.36</h:a>
+      </documentation>
+      <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
+          <h:p>This command is issued by the Client to get the current configuration information of the Reader. The Requested Data passed in the command represents the parameter(s) of interest to the Client that has to be returned by the Reader.</h:p>
+      </description>
+    </annotation>
+    <parameter repeat="1"   type="Status"/>
+  </messageDefinition>
+
   <messageDefinition name="UploadTagLog" typeNum="620" required="true" responseType="UploadTagLogAck">
     <annotation>
       <documentation>
