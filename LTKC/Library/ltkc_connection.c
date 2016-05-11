@@ -356,7 +356,6 @@ LLRP_Conn_startServerForUpper (
   LLRP_tSConnection *           pConn)
 {
     int                         Sock;
-    static const struct addrinfo AddrInfoMask;
     int                         Flag;
     struct sockaddr_in          Sin;
     int                         Rc;

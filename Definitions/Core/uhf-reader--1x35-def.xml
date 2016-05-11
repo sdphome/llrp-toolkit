@@ -69,7 +69,7 @@
     <field     type="bytesToEnd" name="Data" format="Hex"/>
   </parameterDefinition>
 
-  <messageDefinition name="ErrorAck" typeNum="303" required="true">
+  <messageDefinition name="ErrorAck" typeNum="305" required="true">
     <annotation>
       <documentation>
         <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=93&amp;view=fit">LLRP Specification Section 14.1.1</h:a>
@@ -117,7 +117,7 @@
     </annotation>
     <field     type="u32"   name="StatusCode"
                             enumeration="StatusCode"/>
-    <field     type="utf8v" name="ErrorDescription" format="UTF8"/>
+    <field     type="u8v" name="ErrorDescription"/>
   </parameterDefinition>
 
   <messageDefinition name="Keepalive" typeNum="300" required="true" responseType="KeepaliveAck">
@@ -344,14 +344,15 @@
          <h:p>This parameter carries the general capabilities of the device like supported air protocols, version of the Reader firmware, device hardware and software information, and receive sensitivity table. </h:p> 
       </description>
     </annotation>
-    <field     type="utf8v" name="DeviceManufacturerName" format="UTF8"/>
+    <field     type="u8v"   name="DeviceManufacturerName"/>
     <field     type="u8v"   name="DeviceSN"/>
     <field     type="u16"   name="DeviceModel"/>
     <field     type="u16"   name="DeviceSpecification"/>
     <field     type="u8"    name="MaxNumberOfAntennaSupported"/>
     <field     type="u1"    name="HasUTCClockCapability"/>
-    <field     type="u1"    name="HasLocationCapability"/>	
-    <reserved  bitCount="6"/>
+    <field     type="u1"    name="HasLocationCapability"/>
+	<field     type="u1"    name="IsDeviceBinded"/>
+    <reserved  bitCount="5"/>
     <parameter repeat="1"   type="GPIOCapabilities"/>
   </parameterDefinition>
 
@@ -402,7 +403,7 @@
          <h:p>This parameter describes the GPIO capabilities of the Reader. A value of zero for NumGPIs indicates that the Reader does not have general purpose inputs. A value of zero for NumGPOs indicates that the Reader does not have general purpose outputs.</h:p>
       </description>
     </annotation>
-    <field     type="u8"   name="PortNum"/>
+    <field     type="u8"      name="PortNum"/>
 	<parameter repeat="1-N"   type="SerialAttribute"/>
   </parameterDefinition>
 
@@ -521,7 +522,7 @@
       </description>
     </annotation>
     <field     type="u16"    name="Index"/>
-    <field     type="u64"    name="Frequency"/>
+    <field     type="u32"    name="Frequency"/>
   </parameterDefinition>
 
   <parameterDefinition name="ForDataRateTable" typeNum="361" required="true">
@@ -1010,7 +1011,7 @@
           <h:p>This parameter defines antenna inventory operations.</h:p>
       </description>
     </annotation>
-    <field     type="u8v"  name="AntennaIDs"/>
+    <field     type="u8v"   name="AntennaIDs"/>
     <parameter repeat="1"   type="AntennaSpecStopTrigger"/>
     <parameter repeat="1-N" type="RfSpec"/>
   </parameterDefinition>
@@ -1137,8 +1138,10 @@
     </annotation>
     <field     type="u8"    name="MemoryBankID"
 							enumeration="MemoryBankID"/>
+	<field     type="u8"    name="ReadType"/>
     <field     type="u16"   name="Pointer"/>
 	<field     type="u16"   name="Count"/>
+	<field     type="u8"    name="BankType"/>
   </parameterDefinition>
 
   <parameterDefinition name="SelectReportSpec" typeNum="410" required="true">
@@ -1409,6 +1412,7 @@
     </annotation>
     <choice    repeat="1"   type="MatchSpec"/>
     <choice    repeat="1-N" type="OpSpec"/>
+	<parameter repeat="0-1" type="SecurityModuleSpec"/>
   </parameterDefinition>
 
   <choiceDefinition name="MatchSpec">
@@ -1453,7 +1457,6 @@
   <choiceDefinition name="OpSpec">
     <parameter type="HbReadSpec"/>
     <parameter type="HbWriteSpec"/>
-    <parameter type="HbPrivateWriteSpec"/>
     <parameter type="ClientRequestSpec"/>
   </choiceDefinition>
 
@@ -1470,10 +1473,7 @@
       </description>
     </annotation>
 	<field     type="u16"   name="OpSpecID"/>
-	<field     type="u8"    name="MemoryBankID"
-							enumeration="MemoryBankID"/>
-	<field     type="u16"   name="Pointer"/>
-	<field     type="u16"   name="Count"/>
+	<parameter repeat="1"   type="MemoryBank"/>
   </parameterDefinition>
 
   <enumerationDefinition name="MemoryBankID">
@@ -1505,6 +1505,40 @@
 	<field     type="u16"   name="OpSpecID"/>
   </parameterDefinition>
 
+  <parameterDefinition name="HbWriteSpec" typeNum="458" required="true">
+    <annotation>
+      <documentation>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=65&amp;view=fit">LLRP Specification Section 11.2.1.2</h:a>      
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=139&amp;view=fit">LLRP Specification Section 16.2.5.1.2</h:a>
+      </documentation>
+      <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
+          <h:p>This parameter defines the air protocol access-specific settings. It contains a TagSpec and an OpSpec Parameter. The TagSpec specifies the tag filters in terms of air protocol specific memory capabilities (e.g., memory banks, pointer and length). The OpSpec specifies all the details of the operations required for the air protocol specific access operation commands.</h:p>
+          <h:p> In case there are multiple AccessSpecs that get matched during a TagSpec lookup, the Reader <h:b>SHALL</h:b> only execute the first enabled AccessSpec that matches, where the ordering of the AccessSpecs is the order in which the AccessSpecs were created by the Client.</h:p>
+          <h:p>The order of execution of OpSpecs within an AccessSpec is the order in which the OpSpecs were set up in the AccessSpec. If an OpSpec execution fails, the Reader <h:b>SHALL</h:b> stop the execution of the AccessSpec.</h:p>
+      </description>
+    </annotation>
+	<field     type="u16"   name="OpSpecID"/>
+	<field     type="u8"    name="MemoryBankID"
+							enumeration="MemoryBankID"/>
+	<field     type="u16"   name="Pointer"/>
+	<field     type="u16v"  name="Data"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="SecurityModuleSpec" typeNum="460" required="true">
+    <annotation>
+      <documentation>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=65&amp;view=fit">LLRP Specification Section 11.2.1.2</h:a>      
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=139&amp;view=fit">LLRP Specification Section 16.2.5.1.2</h:a>
+      </documentation>
+      <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
+          <h:p>This parameter defines the air protocol access-specific settings. It contains a TagSpec and an OpSpec Parameter. The TagSpec specifies the tag filters in terms of air protocol specific memory capabilities (e.g., memory banks, pointer and length). The OpSpec specifies all the details of the operations required for the air protocol specific access operation commands.</h:p>
+          <h:p> In case there are multiple AccessSpecs that get matched during a TagSpec lookup, the Reader <h:b>SHALL</h:b> only execute the first enabled AccessSpec that matches, where the ordering of the AccessSpecs is the order in which the AccessSpecs were created by the Client.</h:p>
+          <h:p>The order of execution of OpSpecs within an AccessSpec is the order in which the OpSpecs were set up in the AccessSpec. If an OpSpec execution fails, the Reader <h:b>SHALL</h:b> stop the execution of the AccessSpec.</h:p>
+      </description>
+    </annotation>
+    <parameter repeat="1" type="ReadMode"/>
+  </parameterDefinition>
+
   <parameterDefinition name="AccessReportSpec" typeNum="457" required="true">
     <annotation>
       <documentation>
@@ -1529,42 +1563,6 @@
     <entry     value="0"    name="Whenever_ROReport_Is_Generated"/>
     <entry     value="1"    name="End_Of_AccessSpec"/>
   </enumerationDefinition>
-
-  <parameterDefinition name="HbWriteSpec" typeNum="458" required="true">
-    <annotation>
-      <documentation>
-        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=65&amp;view=fit">LLRP Specification Section 11.2.1.2</h:a>      
-        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=139&amp;view=fit">LLRP Specification Section 16.2.5.1.2</h:a>
-      </documentation>
-      <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
-          <h:p>This parameter defines the air protocol access-specific settings. It contains a TagSpec and an OpSpec Parameter. The TagSpec specifies the tag filters in terms of air protocol specific memory capabilities (e.g., memory banks, pointer and length). The OpSpec specifies all the details of the operations required for the air protocol specific access operation commands.</h:p>
-          <h:p> In case there are multiple AccessSpecs that get matched during a TagSpec lookup, the Reader <h:b>SHALL</h:b> only execute the first enabled AccessSpec that matches, where the ordering of the AccessSpecs is the order in which the AccessSpecs were created by the Client.</h:p>
-          <h:p>The order of execution of OpSpecs within an AccessSpec is the order in which the OpSpecs were set up in the AccessSpec. If an OpSpec execution fails, the Reader <h:b>SHALL</h:b> stop the execution of the AccessSpec.</h:p>
-      </description>
-    </annotation>
-	<field     type="u16"   name="OpSpecID"/>
-	<field     type="u8"    name="MemoryBankID"
-							enumeration="MemoryBankID"/>
-	<field     type="u16"   name="Pointer"/>
-	<field     type="u16v"  name="Data"/>
-  </parameterDefinition>
-
-  <parameterDefinition name="HbPrivateWriteSpec" typeNum="459" required="true">
-    <annotation>
-      <documentation>
-        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=65&amp;view=fit">LLRP Specification Section 11.2.1.2</h:a>      
-        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=139&amp;view=fit">LLRP Specification Section 16.2.5.1.2</h:a>
-      </documentation>
-      <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
-          <h:p>This parameter defines the air protocol access-specific settings. It contains a TagSpec and an OpSpec Parameter. The TagSpec specifies the tag filters in terms of air protocol specific memory capabilities (e.g., memory banks, pointer and length). The OpSpec specifies all the details of the operations required for the air protocol specific access operation commands.</h:p>
-          <h:p> In case there are multiple AccessSpecs that get matched during a TagSpec lookup, the Reader <h:b>SHALL</h:b> only execute the first enabled AccessSpec that matches, where the ordering of the AccessSpecs is the order in which the AccessSpecs were created by the Client.</h:p>
-          <h:p>The order of execution of OpSpecs within an AccessSpec is the order in which the OpSpecs were set up in the AccessSpec. If an OpSpec execution fails, the Reader <h:b>SHALL</h:b> stop the execution of the AccessSpec.</h:p>
-      </description>
-    </annotation>
-	<field     type="u16"   name="OpSpecID"/>
-	<field     type="u8"    name="WriteType"/>
-	<field     type="u16v"  name="Data"/>
-  </parameterDefinition>
 
   <messageDefinition name="TagSelectAccessReport" typeNum="500" required="true">
     <annotation>
@@ -1623,14 +1621,19 @@
     <parameter repeat="0-1" type="LastSeenTimestampUTC"/>
     <parameter repeat="0-1" type="TagSeenCount"/>
     <parameter repeat="0-1" type="AccessSpecID"/>
-	<parameter repeat="0-1" type="SelectSpecResult"/>
+	<choice    repeat="0-1" type="SelectSpecResult"/>
     <choice    repeat="0-N" type="AccessSpecResult"/>
   </parameterDefinition>
 
+  <choiceDefinition name="SelectSpecResult">
+    <parameter type="GeneralSelectSpecResult"/>
+    <parameter type="CustomizedSelectSpecResult"/>
+  </choiceDefinition>
+
   <choiceDefinition name="AccessSpecResult">
     <parameter type="HbReadSpecResult"/>
+	<parameter type="HbCustomizedReadSpecResult"/>
     <parameter type="HbWriteSpecResult"/>
-    <parameter type="HbPrivateWriteSpecResult"/>
     <parameter type="ClientRequestSpecResult"/>
   </choiceDefinition>
 
@@ -1755,7 +1758,7 @@
     <field     type="u32"   name="AccessSpecID"/>
   </parameterDefinition>
 
-  <parameterDefinition name="SelectSpecResult" typeNum="510" required="true">
+  <parameterDefinition name="GeneralSelectSpecResult" typeNum="510" required="true">
     <annotation>
       <documentation>
         <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=85&amp;view=fit">LLRP Specification Section 13.2.3.15</h:a>
@@ -1767,6 +1770,20 @@
     </annotation>
     <field     type="u8"   name="Result"/>
 	<field     type="u16v" name="TagData"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="CustomizedSelectSpecResult" typeNum="517" required="true">
+    <annotation>
+      <documentation>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=85&amp;view=fit">LLRP Specification Section 13.2.3.15</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=146&amp;view=fit">LLRP Specification Section 16.2.7.3.15</h:a>
+      </documentation>
+      <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
+          <h:p>This parameter carries the AccessSpecID information.</h:p>
+      </description>
+    </annotation>
+    <field     type="u8"   name="Result"/>
+	<parameter repeat="0-1"  type="ReadDataInfo"/>
   </parameterDefinition>
 
   <parameterDefinition name="HbReadSpecResult" typeNum="511" required="true">
@@ -1812,7 +1829,7 @@
 	<field     type="u16"  name="OpSpecID"/>
   </parameterDefinition>
 
-  <parameterDefinition name="HbPrivateWriteSpecResult" typeNum="514" required="true">
+  <parameterDefinition name="HbCustomizedReadSpecResult" typeNum="515" required="true">
     <annotation>
       <documentation>
         <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=85&amp;view=fit">LLRP Specification Section 13.2.3.15</h:a>
@@ -1822,9 +1839,203 @@
           <h:p>This parameter carries the AccessSpecID information.</h:p>
       </description>
     </annotation>
-    <field     type="u8"   name="Result"/>
-	<field     type="u8v" name="ResultDescription"/>
-	<field     type="u16"  name="OpSpecID"/>
+    <field     type="u8"     name="Result"/>
+	<field     type="u16"    name="OpSpecID"/>
+	<parameter repeat="0-1"  type="ReadDataInfo"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="ReadDataInfo" typeNum="516" required="true">
+    <annotation>
+      <documentation>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=85&amp;view=fit">LLRP Specification Section 13.2.3.15</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=146&amp;view=fit">LLRP Specification Section 16.2.7.3.15</h:a>
+      </documentation>
+      <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
+          <h:p>This parameter carries the AccessSpecID information.</h:p>
+      </description>
+    </annotation>
+	<parameter repeat="0-1"  type="CID"/>
+	<parameter repeat="0-1"  type="FPDH"/>
+	<parameter repeat="0-1"  type="SYXZ"/>
+	<parameter repeat="0-1"  type="CCRQ"/>
+	<parameter repeat="0-1"  type="CLLX"/>
+	<parameter repeat="0-1"  type="PL"/>
+	<parameter repeat="0-1"  type="GL"/>
+	<parameter repeat="0-1"  type="HPZL"/>
+	<parameter repeat="0-1"  type="HPHMXH"/>
+	<parameter repeat="0-1"  type="JYYXQ"/>
+	<parameter repeat="0-1"  type="QZBFQ"/>
+	<parameter repeat="0-1"  type="CSYS"/>
+	<parameter repeat="0-1"  type="ZKZL"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="CID" typeNum="34817" required="true">
+    <annotation>
+      <documentation>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=85&amp;view=fit">LLRP Specification Section 13.2.3.15</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=146&amp;view=fit">LLRP Specification Section 16.2.7.3.15</h:a>
+      </documentation>
+      <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
+          <h:p>This parameter carries the AccessSpecID information.</h:p>
+      </description>
+	  <field     type="u8v"     name="CIDData"/>
+    </annotation>
+  </parameterDefinition>
+
+  <parameterDefinition name="FPDH" typeNum="34818" required="true">
+    <annotation>
+      <documentation>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=85&amp;view=fit">LLRP Specification Section 13.2.3.15</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=146&amp;view=fit">LLRP Specification Section 16.2.7.3.15</h:a>
+      </documentation>
+      <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
+          <h:p>This parameter carries the AccessSpecID information.</h:p>
+      </description>
+	  <field     type="u8v"     name="FPDHData"/>
+    </annotation>
+  </parameterDefinition>
+
+  <parameterDefinition name="SYXZ" typeNum="34819" required="true">
+    <annotation>
+      <documentation>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=85&amp;view=fit">LLRP Specification Section 13.2.3.15</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=146&amp;view=fit">LLRP Specification Section 16.2.7.3.15</h:a>
+      </documentation>
+      <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
+          <h:p>This parameter carries the AccessSpecID information.</h:p>
+      </description>
+	  <field     type="u8v"     name="SYXZData"/>
+    </annotation>
+  </parameterDefinition>
+
+  <parameterDefinition name="CCRQ" typeNum="34820" required="true">
+    <annotation>
+      <documentation>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=85&amp;view=fit">LLRP Specification Section 13.2.3.15</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=146&amp;view=fit">LLRP Specification Section 16.2.7.3.15</h:a>
+      </documentation>
+      <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
+          <h:p>This parameter carries the AccessSpecID information.</h:p>
+      </description>
+	  <field     type="u8v"     name="CCRQData"/>
+    </annotation>
+  </parameterDefinition>
+
+  <parameterDefinition name="CLLX" typeNum="34821" required="true">
+    <annotation>
+      <documentation>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=85&amp;view=fit">LLRP Specification Section 13.2.3.15</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=146&amp;view=fit">LLRP Specification Section 16.2.7.3.15</h:a>
+      </documentation>
+      <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
+          <h:p>This parameter carries the AccessSpecID information.</h:p>
+      </description>
+	  <field     type="u8v"     name="CLLXData"/>
+    </annotation>
+  </parameterDefinition>
+
+  <parameterDefinition name="GL" typeNum="34822" required="true">
+    <annotation>
+      <documentation>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=85&amp;view=fit">LLRP Specification Section 13.2.3.15</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=146&amp;view=fit">LLRP Specification Section 16.2.7.3.15</h:a>
+      </documentation>
+      <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
+          <h:p>This parameter carries the AccessSpecID information.</h:p>
+      </description>
+	  <field     type="u8v"     name="GLData"/>
+    </annotation>
+  </parameterDefinition>
+
+  <parameterDefinition name="PL" typeNum="34823" required="true">
+    <annotation>
+      <documentation>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=85&amp;view=fit">LLRP Specification Section 13.2.3.15</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=146&amp;view=fit">LLRP Specification Section 16.2.7.3.15</h:a>
+      </documentation>
+      <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
+          <h:p>This parameter carries the AccessSpecID information.</h:p>
+      </description>
+	  <field     type="u8v"     name="PLData"/>
+    </annotation>
+  </parameterDefinition>
+
+  <parameterDefinition name="HPZL" typeNum="34824" required="true">
+    <annotation>
+      <documentation>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=85&amp;view=fit">LLRP Specification Section 13.2.3.15</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=146&amp;view=fit">LLRP Specification Section 16.2.7.3.15</h:a>
+      </documentation>
+      <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
+          <h:p>This parameter carries the AccessSpecID information.</h:p>
+      </description>
+	  <field     type="u8v"     name="HPZLData"/>
+    </annotation>
+  </parameterDefinition>
+
+  <parameterDefinition name="HPHMXH" typeNum="34825" required="true">
+    <annotation>
+      <documentation>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=85&amp;view=fit">LLRP Specification Section 13.2.3.15</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=146&amp;view=fit">LLRP Specification Section 16.2.7.3.15</h:a>
+      </documentation>
+      <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
+          <h:p>This parameter carries the AccessSpecID information.</h:p>
+      </description>
+	  <field     type="u8v"     name="HPHMXHData"/>
+    </annotation>
+  </parameterDefinition>
+
+  <parameterDefinition name="JYYXQ" typeNum="34826" required="true">
+    <annotation>
+      <documentation>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=85&amp;view=fit">LLRP Specification Section 13.2.3.15</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=146&amp;view=fit">LLRP Specification Section 16.2.7.3.15</h:a>
+      </documentation>
+      <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
+          <h:p>This parameter carries the AccessSpecID information.</h:p>
+      </description>
+	  <field     type="u8v"     name="JYYXQData"/>
+    </annotation>
+  </parameterDefinition>
+
+  <parameterDefinition name="QZBFQ" typeNum="34827" required="true">
+    <annotation>
+      <documentation>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=85&amp;view=fit">LLRP Specification Section 13.2.3.15</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=146&amp;view=fit">LLRP Specification Section 16.2.7.3.15</h:a>
+      </documentation>
+      <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
+          <h:p>This parameter carries the AccessSpecID information.</h:p>
+      </description>
+	  <field     type="u8v"     name="QZBFQData"/>
+    </annotation>
+  </parameterDefinition>
+
+  <parameterDefinition name="ZKZL" typeNum="34828" required="true">
+    <annotation>
+      <documentation>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=85&amp;view=fit">LLRP Specification Section 13.2.3.15</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=146&amp;view=fit">LLRP Specification Section 16.2.7.3.15</h:a>
+      </documentation>
+      <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
+          <h:p>This parameter carries the AccessSpecID information.</h:p>
+      </description>
+	  <field     type="u8v"     name="ZKZLData"/>
+    </annotation>
+  </parameterDefinition>
+
+  <parameterDefinition name="CSYS" typeNum="34829" required="true">
+    <annotation>
+      <documentation>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=85&amp;view=fit">LLRP Specification Section 13.2.3.15</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=146&amp;view=fit">LLRP Specification Section 16.2.7.3.15</h:a>
+      </documentation>
+      <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
+          <h:p>This parameter carries the AccessSpecID information.</h:p>
+      </description>
+	  <field     type="u8v"     name="CSYSData"/>
+    </annotation>
   </parameterDefinition>
 
   <messageDefinition name="ClientRequestOp" typeNum="590" required="true" responseType="ClientRequestOpAck">
@@ -1869,6 +2080,47 @@
 	<choice    repeat="0-N" type="OpSpec"/>
   </parameterDefinition>
 
+  <messageDefinition name="EnableCachedEventsAndReport" typeNum="580" required="true" responseType="EnableCachedEventsAndReportAck">
+    <annotation>
+      <documentation>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=67&amp;view=fit">LLRP Specification Section 12.1.1</h:a>            
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=126&amp;view=fit">LLRP Specification Section 16.1.36</h:a>
+      </documentation>
+      <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
+          <h:p>This command is issued by the Client to get the current configuration information of the Reader. The Requested Data passed in the command represents the parameter(s) of interest to the Client that has to be returned by the Reader.</h:p>
+      </description>
+    </annotation>
+  </messageDefinition>
+
+  <messageDefinition name="CachedSelectAccessReport" typeNum="581" required="true">
+    <annotation>
+      <documentation>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=67&amp;view=fit">LLRP Specification Section 12.1.1</h:a>            
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=126&amp;view=fit">LLRP Specification Section 16.1.36</h:a>
+      </documentation>
+      <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
+          <h:p>This command is issued by the Client to get the current configuration information of the Reader. The Requested Data passed in the command represents the parameter(s) of interest to the Client that has to be returned by the Reader.</h:p>
+      </description>
+    </annotation>
+    <parameter repeat="1"   type="Status"/>
+	<field     type="u16"   name="SequenceID"/>
+	<field     type="u8"    name="IsLastedFrame"/>
+	<parameter repeat="0-N" type="TagReportData"/>
+  </messageDefinition>
+
+  <messageDefinition name="EnableCachedEventsAndReportAck" typeNum="582" required="true">
+    <annotation>
+      <documentation>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=67&amp;view=fit">LLRP Specification Section 12.1.1</h:a>            
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=126&amp;view=fit">LLRP Specification Section 16.1.36</h:a>
+      </documentation>
+      <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
+          <h:p>This command is issued by the Client to get the current configuration information of the Reader. The Requested Data passed in the command represents the parameter(s) of interest to the Client that has to be returned by the Reader.</h:p>
+      </description>
+    </annotation>
+	<field     type="u16"   name="SequenceID"/>
+  </messageDefinition>
+
   <messageDefinition name="DeviceBinding" typeNum="600" required="true" responseType="DeviceBindingAck">
     <annotation>
       <documentation>
@@ -1896,20 +2148,7 @@
 	<field     type="u8v"   name="BindingResultData"/>
     <parameter repeat="1"   type="Status"/>
   </messageDefinition>
-<!--
-  <messageDefinition name="DeviceBindingResultNotification" typeNum="602" required="true">
-    <annotation>
-      <documentation>
-        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=67&amp;view=fit">LLRP Specification Section 12.1.1</h:a>            
-        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=126&amp;view=fit">LLRP Specification Section 16.1.36</h:a>
-      </documentation>
-      <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
-          <h:p>This command is issued by the Client to get the current configuration information of the Reader. The Requested Data passed in the command represents the parameter(s) of interest to the Client that has to be returned by the Reader.</h:p>
-      </description>
-    </annotation>
-    <parameter repeat="1"   type="Status"/>
-  </messageDefinition>
--->
+
   <messageDefinition name="DeviceCertificateConfig" typeNum="602" required="true" responseType="DeviceCertificateConfigAck">
     <annotation>
       <documentation>
@@ -1962,7 +2201,7 @@
     </annotation>
     <field     type="u8"    name="UploadType"/>
     <field     type="u32"   name="UploadCount"/>
-	<field     type="u64"   name="StartLogSequence"/>
+	<field     type="u32"   name="Milliseconds"/>
     <parameter repeat="0-1" type="StartLogTimestamp"/>
 	<parameter repeat="0-1" type="EndLogTimestamp"/>
   </messageDefinition>
@@ -1978,7 +2217,22 @@
       </description>
     </annotation>
     <parameter repeat="1"   type="Status"/>
+	<field     type="u16"   name="SequenceID"/>
+	<field     type="u8"    name="IsLastedFrame"/>
 	<parameter repeat="0-N" type="TagLog"/>
+  </messageDefinition>
+
+  <messageDefinition name="UploadTagLogConfirm" typeNum="626" required="true">
+    <annotation>
+      <documentation>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=67&amp;view=fit">LLRP Specification Section 12.1.1</h:a>            
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=126&amp;view=fit">LLRP Specification Section 16.1.36</h:a>
+      </documentation>
+      <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
+          <h:p>This command is issued by the Client to get the current configuration information of the Reader. The Requested Data passed in the command represents the parameter(s) of interest to the Client that has to be returned by the Reader.</h:p>
+      </description>
+    </annotation>
+	<field     type="u16"   name="SequenceID"/>
   </messageDefinition>
 
   <messageDefinition name="ClearTagLog" typeNum="622" required="true" responseType="ClearTagLogAck">
@@ -2004,6 +2258,32 @@
       </description>
     </annotation>
     <parameter repeat="1"   type="Status"/>
+  </messageDefinition>
+
+  <messageDefinition name="TagLogCount" typeNum="624" required="true" responseType="TagLogCountAck">
+    <annotation>
+      <documentation>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=67&amp;view=fit">LLRP Specification Section 12.1.1</h:a>            
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=126&amp;view=fit">LLRP Specification Section 16.1.36</h:a>
+      </documentation>
+      <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
+          <h:p>This command is issued by the Client to get the current configuration information of the Reader. The Requested Data passed in the command represents the parameter(s) of interest to the Client that has to be returned by the Reader.</h:p>
+      </description>
+    </annotation>
+  </messageDefinition>
+
+  <messageDefinition name="TagLogCountAck" typeNum="625" required="true">
+    <annotation>
+      <documentation>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=67&amp;view=fit">LLRP Specification Section 12.1.1</h:a>            
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=126&amp;view=fit">LLRP Specification Section 16.1.36</h:a>
+      </documentation>
+      <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
+          <h:p>This command is issued by the Client to get the current configuration information of the Reader. The Requested Data passed in the command represents the parameter(s) of interest to the Client that has to be returned by the Reader.</h:p>
+      </description>
+    </annotation>
+	<parameter repeat="1"   type="Status"/>
+	<field     type="u32"   name="LogCount"/>
   </messageDefinition>
 
   <parameterDefinition name="TagLog" typeNum="620" required="true">
@@ -2064,7 +2344,7 @@
     </annotation>
     <field     type="u8"    name="UploadType"/>
     <field     type="u32"   name="UploadCount"/>
-	<field     type="u64"   name="StartLogSequence"/>
+	<field     type="u32"   name="Milliseconds"/>
     <parameter repeat="0-1" type="StartLogTimestamp"/>
 	<parameter repeat="0-1" type="EndLogTimestamp"/>
   </messageDefinition>
@@ -2080,7 +2360,22 @@
       </description>
     </annotation>
     <parameter repeat="1"   type="Status"/>
+	<field     type="u16"   name="SequenceID"/>
+	<field     type="u8"    name="IsLastedFrame"/>
 	<parameter repeat="0-N" type="DeviceLog"/>
+  </messageDefinition>
+
+  <messageDefinition name="UploadDeviceLogConfirm" typeNum="646" required="true">
+    <annotation>
+      <documentation>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=67&amp;view=fit">LLRP Specification Section 12.1.1</h:a>            
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=126&amp;view=fit">LLRP Specification Section 16.1.36</h:a>
+      </documentation>
+      <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
+          <h:p>This command is issued by the Client to get the current configuration information of the Reader. The Requested Data passed in the command represents the parameter(s) of interest to the Client that has to be returned by the Reader.</h:p>
+      </description>
+    </annotation>
+	<field     type="u16"   name="SequenceID"/>
   </messageDefinition>
 
   <messageDefinition name="ClearDeviceLog" typeNum="642" required="true" responseType="ClearDeviceLogAck">
@@ -2108,6 +2403,32 @@
     <parameter repeat="1"   type="Status"/>
   </messageDefinition>
 
+  <messageDefinition name="DeviceLogCount" typeNum="644" required="true" responseType="DeviceLogCountAck">
+    <annotation>
+      <documentation>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=67&amp;view=fit">LLRP Specification Section 12.1.1</h:a>            
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=126&amp;view=fit">LLRP Specification Section 16.1.36</h:a>
+      </documentation>
+      <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
+          <h:p>This command is issued by the Client to get the current configuration information of the Reader. The Requested Data passed in the command represents the parameter(s) of interest to the Client that has to be returned by the Reader.</h:p>
+      </description>
+    </annotation>
+  </messageDefinition>
+
+  <messageDefinition name="DeviceLogCountAck" typeNum="645" required="true">
+    <annotation>
+      <documentation>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=67&amp;view=fit">LLRP Specification Section 12.1.1</h:a>            
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=126&amp;view=fit">LLRP Specification Section 16.1.36</h:a>
+      </documentation>
+      <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
+          <h:p>This command is issued by the Client to get the current configuration information of the Reader. The Requested Data passed in the command represents the parameter(s) of interest to the Client that has to be returned by the Reader.</h:p>
+      </description>
+    </annotation>
+    <parameter repeat="1"   type="Status"/>
+	<field     type="u32"   name="LogCount"/>
+  </messageDefinition>
+
   <parameterDefinition name="DeviceLog" typeNum="640" required="true">
     <annotation>
       <documentation>
@@ -2123,7 +2444,7 @@
     <field     type="u8"   name="LogType"
 						   enumeration="LogType"/>
 	<field     type="u32"  name="LogCode"/>
-	<field     type="utf8v"  name="LogDescInfo"/>
+	<field     type="u8v"  name="LogDescInfo"/>
 	<parameter repeat="1"  type="UTCTimestamp"/>
   </parameterDefinition>
 
@@ -2134,7 +2455,7 @@
       </documentation>
     </annotation>
     <entry     value="0"    name="Device_Fault"/>
-    <entry     value="1"    name="Recorvery_Fault"/>
+    <entry     value="1"    name="Fault_Recorvery"/>
     <entry     value="2"    name="Run_Log"/>
   </enumerationDefinition>
 
@@ -2151,7 +2472,6 @@
     <field     type="u8"    name="RequestedData"
 	                        enumeration="ConfigRequestedData"/>
     <field     type="u8"    name="AntennalID"/>
-    <parameter repeat="0-1" type="SecurityModuleConfiguration"/>
   </messageDefinition>
 
   <enumerationDefinition name="ConfigRequestedData">
@@ -2246,7 +2566,7 @@
           <h:p>Readers that do not support GPOs <h:b>SHALL</h:b> set NumGPOs in the GPIOCapabilities to zero. If such a Reader receives a SET_READER_CONFIG with GPOWriteData Parameter, the Reader <h:b>SHALL</h:b> return an error message and not process any of the parameters in that message.</h:p>
       </description>
     </annotation>
-    <parameter repeat="1"   type="EventNotificationState"/>
+    <parameter repeat="1-N"   type="EventNotificationState"/>
   </parameterDefinition>
 
   <parameterDefinition name="EventNotificationState" typeNum="661" required="true">
@@ -2351,7 +2671,7 @@
           <h:p>Readers that do not support GPOs <h:b>SHALL</h:b> set NumGPOs in the GPIOCapabilities to zero. If such a Reader receives a SET_READER_CONFIG with GPOWriteData Parameter, the Reader <h:b>SHALL</h:b> return an error message and not process any of the parameters in that message.</h:p>
       </description>
     </annotation>
-	<field     type="utf8v"    name="DeviceName"/>
+	<field     type="u8v"    name="DeviceName"/>
   </parameterDefinition>
 
   <parameterDefinition name="AlarmConfiguration" typeNum="666" required="true">
@@ -2534,7 +2854,6 @@
       </description>
     </annotation>
 	<field     type="u16"     name="Port"/>
-	<parameter repeat="1"     type="IPAddress"/>
   </parameterDefinition>
 
   <parameterDefinition name="SerialLinkConfiguration" typeNum="675" required="true">
@@ -2549,8 +2868,8 @@
       </description>
     </annotation>
 	<field     type="u8"     name="IfIndex"/>
-	<field     type="u8"     name="SrcAddress"/>
-	<field     type="u8"     name="DstAddress"/>
+	<field     type="u8"     name="SrcAddr"/>
+	<field     type="u8"     name="DstAddr"/>
   </parameterDefinition>
 
   <parameterDefinition name="HttpLinkConfiguration" typeNum="676" required="true">
@@ -2564,7 +2883,7 @@
           <h:p>Readers that do not support GPOs <h:b>SHALL</h:b> set NumGPOs in the GPIOCapabilities to zero. If such a Reader receives a SET_READER_CONFIG with GPOWriteData Parameter, the Reader <h:b>SHALL</h:b> return an error message and not process any of the parameters in that message.</h:p>
       </description>
     </annotation>
-	<field     type="utf8v"     name="ServerUrl"/>
+	<field     type="u8v"     name="ServerUrl"/>
   </parameterDefinition>
 
   <parameterDefinition name="EthernetIpv4Configuration" typeNum="677" required="true">
@@ -2711,7 +3030,82 @@
           <h:p>Readers that do not support GPOs <h:b>SHALL</h:b> set NumGPOs in the GPIOCapabilities to zero. If such a Reader receives a SET_READER_CONFIG with GPOWriteData Parameter, the Reader <h:b>SHALL</h:b> return an error message and not process any of the parameters in that message.</h:p>
       </description>
     </annotation>
-	<field     type="u8v"      name="ConfigData"/>
+	<parameter repeat="0-1"     type="GeneralConfigData"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="GeneralConfigData" typeNum="685" required="true">
+    <annotation>
+      <documentation>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=72&amp;view=fit">LLRP Specification Section 12.2.3</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=140&amp;view=fit">LLRP Specification Section 16.2.6.3</h:a>
+      </documentation>
+      <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
+          <h:p>This parameter carries the data pertinent to perform the write to a general purpose output port.</h:p> 
+          <h:p>Readers that do not support GPOs <h:b>SHALL</h:b> set NumGPOs in the GPIOCapabilities to zero. If such a Reader receives a SET_READER_CONFIG with GPOWriteData Parameter, the Reader <h:b>SHALL</h:b> return an error message and not process any of the parameters in that message.</h:p>
+      </description>
+    </annotation>
+	<parameter repeat="0-1"     type="RTCTime"/>
+	<parameter repeat="0-1"     type="SecurityModuleSN"/>
+	<parameter repeat="0-1"     type="ReadMode"/>
+	<parameter repeat="0-1"     type="PasswordVersion"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="RTCTime" typeNum="686" required="true">
+    <annotation>
+      <documentation>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=72&amp;view=fit">LLRP Specification Section 12.2.3</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=140&amp;view=fit">LLRP Specification Section 16.2.6.3</h:a>
+      </documentation>
+      <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
+          <h:p>This parameter carries the data pertinent to perform the write to a general purpose output port.</h:p> 
+          <h:p>Readers that do not support GPOs <h:b>SHALL</h:b> set NumGPOs in the GPIOCapabilities to zero. If such a Reader receives a SET_READER_CONFIG with GPOWriteData Parameter, the Reader <h:b>SHALL</h:b> return an error message and not process any of the parameters in that message.</h:p>
+      </description>
+    </annotation>
+	<field     type="u64"      name="Seconds"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="SecurityModuleSN" typeNum="687" required="true">
+    <annotation>
+      <documentation>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=72&amp;view=fit">LLRP Specification Section 12.2.3</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=140&amp;view=fit">LLRP Specification Section 16.2.6.3</h:a>
+      </documentation>
+      <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
+          <h:p>This parameter carries the data pertinent to perform the write to a general purpose output port.</h:p> 
+          <h:p>Readers that do not support GPOs <h:b>SHALL</h:b> set NumGPOs in the GPIOCapabilities to zero. If such a Reader receives a SET_READER_CONFIG with GPOWriteData Parameter, the Reader <h:b>SHALL</h:b> return an error message and not process any of the parameters in that message.</h:p>
+      </description>
+    </annotation>
+	<field     type="u8v"      name="SerialNumber"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="ReadMode" typeNum="688" required="true">
+    <annotation>
+      <documentation>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=72&amp;view=fit">LLRP Specification Section 12.2.3</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=140&amp;view=fit">LLRP Specification Section 16.2.6.3</h:a>
+      </documentation>
+      <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
+          <h:p>This parameter carries the data pertinent to perform the write to a general purpose output port.</h:p> 
+          <h:p>Readers that do not support GPOs <h:b>SHALL</h:b> set NumGPOs in the GPIOCapabilities to zero. If such a Reader receives a SET_READER_CONFIG with GPOWriteData Parameter, the Reader <h:b>SHALL</h:b> return an error message and not process any of the parameters in that message.</h:p>
+      </description>
+    </annotation>
+	<field     type="u1"       name="RepeatReadFlag"/>
+	<reserved  bitCount="7"/>
+	<field     type="u32"      name="Timer"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="PasswordVersion" typeNum="689" required="true">
+    <annotation>
+      <documentation>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=72&amp;view=fit">LLRP Specification Section 12.2.3</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=140&amp;view=fit">LLRP Specification Section 16.2.6.3</h:a>
+      </documentation>
+      <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
+          <h:p>This parameter carries the data pertinent to perform the write to a general purpose output port.</h:p> 
+          <h:p>Readers that do not support GPOs <h:b>SHALL</h:b> set NumGPOs in the GPIOCapabilities to zero. If such a Reader receives a SET_READER_CONFIG with GPOWriteData Parameter, the Reader <h:b>SHALL</h:b> return an error message and not process any of the parameters in that message.</h:p>
+      </description>
+    </annotation>
+	<field     type="u8v"       name="VersionData"/>
   </parameterDefinition>
 
   <messageDefinition name="GetVersion" typeNum="700" required="true" responseType="GetVersionAck">
@@ -2861,7 +3255,7 @@
 	<field     type="u1"      name="CanRun"
                               enumeration="CanRun"/>
 	<reserved  bitCount="4"/>
-	<field     type="utf8v"   name="VerDescInfo"/>
+	<field     type="u8v"     name="VerDescInfo"/>
   </parameterDefinition>
 
   <enumerationDefinition name="UsedOrSpare">
@@ -3021,7 +3415,7 @@
 	<field     type="u8"      name="AlarmReportLevel"
                               enumeration="AlarmReportLevel"/>
 	<field     type="u32"     name="AlarmReportSeconds"/>
-	<field     type="utf8v"   name="AlarmReportDescription"/>
+	<field     type="u8v"   name="AlarmReportDescription"/>
   </parameterDefinition>
 
   <enumerationDefinition name="AlarmReportLevel">
