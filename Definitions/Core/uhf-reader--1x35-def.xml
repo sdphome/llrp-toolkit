@@ -117,7 +117,7 @@
     </annotation>
     <field     type="u32"   name="StatusCode"
                             enumeration="StatusCode"/>
-    <field     type="u8v" name="ErrorDescription"/>
+    <field     type="u8v"   name="ErrorDescription"/>
   </parameterDefinition>
 
   <messageDefinition name="Keepalive" typeNum="300" required="true" responseType="KeepaliveAck">
