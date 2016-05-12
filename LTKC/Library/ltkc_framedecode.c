@@ -1483,7 +1483,7 @@ decodeParameter (
         pDecoder->iNext--;
         Type = get_u16(pBaseDecoderStream,
                     &LLRP_g_fdParameterHeader_TLVType);
-        Type &= 0x3FF;
+        //Type &= 0x3FF; // V1.40 has bigger type
 
         if(LLRP_RC_OK != pError->eResultCode)
         {
