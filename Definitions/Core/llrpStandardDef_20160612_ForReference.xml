@@ -1,0 +1,2822 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ -  Copyright @ 2016 tmri 
+ -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ -->
+
+<uhfdef
+   xmlns="http://www.tmri.cn"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xmlns:h="http://www.w3.org/1999/xhtml"
+>
+
+  <namespaceDefinition
+    prefix="uhf"
+    URI="http://www.tmri.cn"
+    schemaLocation="http://www.llrp.org/ltk/schema/core/encoding/xml/1.0/llrp.xsd"/>
+
+  <messageDefinition name="ErrorAck" typeNum="305">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <parameter repeat="1"   type="Status"/>
+  </messageDefinition>
+
+  <parameterDefinition name="Status" typeNum="300">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u32"   name="StatusCode"/>
+    <field     type="utf8v" name="ErrorDescription" format="UTF8"/>
+  </parameterDefinition>
+
+  <messageDefinition name="Keepalive" typeNum="300">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+  </messageDefinition>
+
+  <messageDefinition name="KeepaliveAck" typeNum="301">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+  </messageDefinition>
+  
+  <messageDefinition name="Disconnect" typeNum="303">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+  </messageDefinition>
+
+  <messageDefinition name="DisconnectAck" typeNum="304">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+  </messageDefinition>
+
+  <messageDefinition name="DeviceEventNotification" typeNum="302">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <parameter repeat="1"   type="UTCTimestamp"/>
+	<parameter repeat="0-1" type="GPIEvent"/>
+	<parameter repeat="0-1" type="SelectSpecEvent"/>
+	<parameter repeat="0-1" type="AntennaSpecEvent"/>
+	<parameter repeat="0-1" type="AntennaStatusEvent"/>
+	<parameter repeat="0-1" type="ConnectionAttemptEvent"/>
+  </messageDefinition>  
+
+  <parameterDefinition name="UTCTimestamp" typeNum="301">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u64"   name="Microseconds" format="Datetime"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="GPIEvent" typeNum="302">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u8"    name="GPIPortNumber"/>
+    <field     type="u1"    name="GPIEvent" enumeration="GPIEventType"/>
+    <reserved  bitCount="7"/>
+  </parameterDefinition>
+
+  <enumerationDefinition name="GPIEventType">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <entry     value="0"    name="Falling"/>
+    <entry     value="1"    name="Rising"/>
+  </enumerationDefinition>
+
+  <parameterDefinition name="SelectSpecEvent" typeNum="303">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u8"    name="EventType" enumeration="SelectSpecEventType"/>
+    <field     type="u32"   name="SelectSpecID"/>
+    <field     type="u32"   name="PreemptingSelectSpecID"/>
+  </parameterDefinition> 
+
+  <enumerationDefinition name="SelectSpecEventType">
+    <annotation>
+      <documentation>
+      </documentation>
+    </annotation>
+    <entry     value="0"    name="Start_Of_SelectSpec"/>
+    <entry     value="1"    name="End_Of_SelectSpec"/>
+    <entry     value="2"    name="Preemption_Of_SelectSpec"/>
+  </enumerationDefinition>
+
+  <parameterDefinition name="AntennaSpecEvent" typeNum="304">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u8"    name="EventType" enumeration="AntennaSpecEventType"/>
+    <field     type="u32"   name="SelectSpecID"/>
+    <field     type="u16"   name="SpecIndex"/>
+  </parameterDefinition> 
+
+  <enumerationDefinition name="AntennaSpecEventType">
+    <annotation>
+      <documentation>
+      </documentation>
+    </annotation>
+    <entry     value="0"    name="End_Of_AntennaSpec"/>
+  </enumerationDefinition>
+  
+  <parameterDefinition name="AntennaStatusEvent" typeNum="305">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u8"    name="EventType" enumeration="AntennaStatusEventType"/>
+    <field     type="u8"    name="AntennaID"/>
+  </parameterDefinition>
+
+  <enumerationDefinition name="AntennaStatusEventType">
+    <annotation>
+      <documentation>
+      </documentation>
+    </annotation>
+    <entry     value="0"    name="Antenna_Disconnected"/>
+    <entry     value="1"    name="Antenna_Connected"/>
+  </enumerationDefinition>
+  
+  <parameterDefinition name="ConnectionAttemptEvent" typeNum="306">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u16"   name="ConnectionStatus" enumeration="ConnectionAttemptEventStatusType"/>
+  </parameterDefinition>
+
+  <enumerationDefinition name="ConnectionAttemptEventStatusType">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <entry     value="0"    name="Success"/>
+    <entry     value="1"    name="Failed_A_Device_Initiated_Connection_Already_Exists"/>
+    <entry     value="2"    name="Failed_A_Client_Initiated_Connection_Already_Exists"/>
+    <entry     value="3"    name="Failed_Reason_Other_Than_A_Connection_Already_Exists"/>
+  </enumerationDefinition>  
+
+  <messageDefinition name="GetDeviceCapabilities" typeNum="350">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u8"    name="RequestedData" enumeration="GetDeviceCapabilitiesRequestedDataType"/>
+  </messageDefinition>
+
+  <enumerationDefinition name="GetDeviceCapabilitiesRequestedDataType">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <entry     value="0"    name="All"/>
+    <entry     value="1"    name="Genaral_Capabilities"/>
+    <entry     value="2"    name="Communication_Capabilities"/>
+    <entry     value="3"    name="Spec_Capabilities"/>
+    <entry     value="4"    name="Rf_Capabilities"/>
+    <entry     value="5"    name="Air_Protocol_Capabilities"/>
+  </enumerationDefinition>
+
+  <messageDefinition name="GetDeviceCapabilitiesAck" typeNum="351">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <parameter repeat="1"   type="Status"/>
+    <parameter repeat="0-1" type="GenaralCapabilities"/>
+    <parameter repeat="0-1" type="CommunicationCapabilities"/>
+    <parameter repeat="0-1" type="SpecCapabilities"/>
+    <parameter repeat="0-1" type="RfCapabilities"/>
+    <parameter repeat="0-1" type="AirProtocolCapabilities"/>
+  </messageDefinition>
+
+  <parameterDefinition name="GenaralCapabilities" typeNum="350">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="utf8v" name="DeviceManufacturerName" format="UTF8"/>
+    <field     type="u8v"   name="DeviceSN"/>
+    <field     type="u16"   name="DeviceModelType"/>
+    <field     type="u16"   name="DeviceSpecificationType"/>
+    <field     type="u8"    name="MaxNumberOfAntennaSupported"/>
+    <field     type="u1"    name="HasUTCClockCapability"/>
+    <field     type="u1"    name="HasLocationCapability"/>
+    <field     type="u1"    name="IsDeviceBinded"/>
+    <reserved  bitCount="5"/>
+    <parameter repeat="1"   type="GPIOCapabilities"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="GPIOCapabilities" typeNum="351">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u8"    name="NumGPIs"/>
+    <field     type="u8"    name="NumGPOs"/>    
+  </parameterDefinition>
+
+  <parameterDefinition name="CommunicationCapabilities" typeNum="352">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u1"    name="SupportEthernet"/>
+    <field     type="u1"    name="SupportWIFI"/>    
+    <field     type="u1"    name="SupportMobile"/>  
+    <field     type="u1"    name="SupportUSB"/>      
+    <field     type="u1"    name="SupportHttpLink"/>    
+    <field     type="u1"    name="SupportIPV6"/>    
+    <field     type="u1"    name="SupportSSL"/>  
+    <reserved  bitCount="1"/>    
+    <field     type="u8"    name="SupportTcpLinkNum"/>    
+    <parameter repeat="0-1" type="SupportRS232"/>  
+    <parameter repeat="0-1" type="SupportRS485"/>  
+  </parameterDefinition>
+  
+  <parameterDefinition name="SupportRS232" typeNum="353">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u8"    name="PortNum"/>    
+    <parameter repeat="1-N" type="SerialAttribute"/>  
+  </parameterDefinition>
+
+  <parameterDefinition name="SerialAttribute" typeNum="354">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u16"   name="Index"/>  
+    <field     type="u32"   name="BaudRate"/>    
+    <field     type="u8"    name="DataBit"/>    
+    <field     type="u8"    name="StopBit"/>    
+    <field     type="u8"    name="Parity"/>    
+    <field     type="u8"    name="FlowControl"/>    
+  </parameterDefinition>
+
+  <parameterDefinition name="SupportRS485" typeNum="355">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u8"    name="PortNum"/>    
+    <parameter repeat="1-N" type="SerialAttribute"/>  
+  </parameterDefinition>
+
+  <parameterDefinition name="SpecCapabilities" typeNum="356">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u1"    name="SupportsClientRequestOpSpec"/>    
+    <field     type="u1"    name="SupportsEventAndReportHolding"/>  
+    <reserved  bitCount="6"/>  
+    <field     type="u16"   name="ClientRequestOpSpecTimeout"/>    
+    <field     type="u8"    name="MaxPriorityLevelSupported"/>    
+    <field     type="u8"    name="MaxNumSelectSpecs"/>    
+    <field     type="u8"    name="MaxNumAntennaSpecsPerSelectSpec"/>    
+    <field     type="u8"    name="MaxNumRfSpecsPerAntennaSpec"/>    
+    <field     type="u8"    name="MaxNumAccessSpecs"/>    
+    <field     type="u8"    name="MaxNumOperationSpecsPerAccessSpec"/>    
+  </parameterDefinition>
+
+  <parameterDefinition name="RfCapabilities" typeNum="357">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u16"   name="CountryCode"/>    
+    <field     type="u16"   name="CommunicationsStandard"/>    
+    <parameter repeat="1-N" type="TransmitPowerLevelTable"/>  
+    <parameter repeat="1"   type="FrequencyInformation"/>  
+    <parameter repeat="1-N" type="ForDataRateTable"/>  
+    <parameter repeat="1-N" type="RevDataRateTable"/>  
+    <parameter repeat="1-N" type="ForModulationTable"/>  
+    <parameter repeat="1-N" type="RevDataEncodingTable"/>  
+    <parameter repeat="1-N" type="ModuleDepthTable"/>  
+  </parameterDefinition>
+
+  <parameterDefinition name="TransmitPowerLevelTable" typeNum="358">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u16"   name="Index"/>    
+    <field     type="s16"   name="TransmitPowerValue"/>  
+  </parameterDefinition>
+
+  <parameterDefinition name="FrequencyInformation" typeNum="359">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u1"    name="Hopping"/>    
+    <reserved  bitCount="7"/>
+    <parameter repeat="1-N" type="FrequencyTable"/>  
+  </parameterDefinition>
+
+  <parameterDefinition name="FrequencyTable" typeNum="360">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u16"   name="Index"/>    
+    <field     type="u32"   name="Frequency"/>  
+  </parameterDefinition>
+
+  <parameterDefinition name="ForDataRateTable" typeNum="361">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u16"   name="Index"/>    
+    <field     type="u32"   name="ForDataRate"/>  
+  </parameterDefinition>
+
+  <parameterDefinition name="RevDataRateTable" typeNum="362">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u16"   name="Index"/>    
+    <field     type="u32"   name="RevDataRate"/>  
+  </parameterDefinition>
+
+  <parameterDefinition name="ForModulationTable" typeNum="363">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u16"   name="Index"/>    
+    <field     type="u8"    name="ModulationType" enumeration="ForModulationType"/>  
+  </parameterDefinition>
+
+  <enumerationDefinition name="ForModulationType">
+    <annotation>
+      <documentation>
+      </documentation>
+    </annotation>
+    <entry     value="0"    name="SSB_ASK"/>
+    <entry     value="1"    name="DSB_ASK"/>
+  </enumerationDefinition>
+
+  <parameterDefinition name="RevDataEncodingTable" typeNum="364">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u16"   name="Index"/>    
+    <field     type="u8"    name="DataEncodingType" enumeration="RevDataEncodingType"/>  
+  </parameterDefinition>
+
+  <enumerationDefinition name="RevDataEncodingType">
+    <annotation>
+      <documentation>
+      </documentation>
+    </annotation>
+    <entry     value="0"    name="FM0"/>
+    <entry     value="1"    name="Miller"/>
+    <entry     value="2"    name="Miller4"/>
+    <entry     value="3"    name="Miller8"/>
+  </enumerationDefinition>
+
+  <parameterDefinition name="ModuleDepthTable" typeNum="365">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u16"   name="Index"/>    
+    <field     type="u16"   name="ModuleDepthValue"/>  
+  </parameterDefinition>
+
+  <parameterDefinition name="AirProtocolCapabilities" typeNum="366">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <parameter repeat="0-N" type="PerAntennaAirProtocol"/>  
+    <choice    repeat="0-N" type="DeviceAirProtocolCapabilities"/> 
+  </parameterDefinition>
+
+  <choiceDefinition name="DeviceAirProtocolCapabilities">
+    <parameter type="HbProtocolCapabilities"/>
+  </choiceDefinition>
+
+  <parameterDefinition name="PerAntennaAirProtocol" typeNum="367">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u8"    name="AntennaID"/>   
+    <field     type="u8v"   name="ProtocolIDs"/>   
+  </parameterDefinition>
+
+  <parameterDefinition name="HbProtocolCapabilities" typeNum="368">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u1"    name="SupportQuery"/>   
+    <field     type="u1"    name="SupportReadData"/>   
+    <field     type="u1"    name="SupportWriteData"/>   
+    <field     type="u1"    name="SupportWriteKey"/>   
+    <reserved  bitCount="4"/>
+  </parameterDefinition>
+
+
+  <messageDefinition name="AddSelectSpec" typeNum="400">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <parameter repeat="1"   type="SelectSpec"/>
+  </messageDefinition>  
+
+  <messageDefinition name="AddSelectSpecAck" typeNum="401">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <parameter repeat="1"   type="Status"/>
+  </messageDefinition> 
+
+  <messageDefinition name="DeleteSelectSpec" typeNum="402">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u32"   name="SelectSpecID"/>
+  </messageDefinition>  
+
+  <messageDefinition name="DeleteSelectSpecAck" typeNum="403">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <parameter repeat="1"   type="Status"/>
+  </messageDefinition> 
+
+  <messageDefinition name="StartSelectSpec" typeNum="404">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u32"   name="SelectSpecID"/>
+  </messageDefinition>  
+
+  <messageDefinition name="StartSelectSpecAck" typeNum="405">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <parameter repeat="1"   type="Status"/>
+  </messageDefinition> 
+
+  <messageDefinition name="StopSelectSpec" typeNum="406">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u32"   name="SelectSpecID"/>
+  </messageDefinition>  
+
+  <messageDefinition name="StopSelectSpecAck" typeNum="407">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <parameter repeat="1"   type="Status"/>
+  </messageDefinition> 
+
+  <messageDefinition name="EnableSelectSpec" typeNum="408">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u32"   name="SelectSpecID"/>
+  </messageDefinition>  
+
+  <messageDefinition name="EnableSelectSpecAck" typeNum="409">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <parameter repeat="1"   type="Status"/>
+  </messageDefinition> 
+
+  <messageDefinition name="DisableSelectSpec" typeNum="410">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u32"   name="SelectSpecID"/>
+  </messageDefinition>  
+
+  <messageDefinition name="DisableSelectSpecAck" typeNum="411">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <parameter repeat="1"   type="Status"/>
+  </messageDefinition> 
+
+  <messageDefinition name="GetSelectSpec" typeNum="412">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+  </messageDefinition>  
+
+  <messageDefinition name="GetSelectSpecAck" typeNum="413">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <parameter repeat="1"   type="Status"/>
+    <parameter repeat="0-N" type="SelectSpec"/>
+  </messageDefinition> 
+
+  <parameterDefinition name="SelectSpec" typeNum="400">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u32"   name="SelectSpecID"/>
+    <field     type="u8"    name="Priority"/>
+    <field     type="u8"    name="CurrentState" enumeration="SelectSpecState"/>
+    <field     type="u1"    name="Persistence"/>
+    <reserved  bitCount="7"/>
+    <parameter repeat="1"   type="SelectSpecStartTrigger"/>
+    <parameter repeat="1"   type="SelectSpecStopTrigger"/>
+    <choice    repeat="1-N" type="SpecParameter"/> 
+    <parameter repeat="0-1" type="SelectReportSpec"/>
+  </parameterDefinition>
+
+  <enumerationDefinition name="SelectSpecState">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <entry     value="0"    name="Disabled"/>
+    <entry     value="1"    name="Inactive"/>
+    <entry     value="2"    name="Active"/>
+  </enumerationDefinition>
+
+  <choiceDefinition name="SpecParameter">
+    <parameter type="AntennaSpec"/>
+  </choiceDefinition>
+
+  <parameterDefinition name="SelectSpecStartTrigger" typeNum="401">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u8"    name="SelectSpecStartTriggerType" enumeration="SelectSpecStartTriggerType"/>
+    <parameter repeat="0-1" type="PeriodicTrigger"/>
+    <parameter repeat="0-1" type="GPITrigger"/>
+  </parameterDefinition>
+
+  <enumerationDefinition name="SelectSpecStartTriggerType">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <entry     value="0"    name="Null"/>
+    <entry     value="1"    name="Immediate"/>
+    <entry     value="2"    name="Periodic"/>
+    <entry     value="3"    name="GPI"/>
+  </enumerationDefinition>
+
+  <parameterDefinition name="PeriodicTrigger" typeNum="402">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u32"   name="Offset"/>
+    <field     type="u32"   name="Period"/>
+    <parameter repeat="0-1" type="UTCTimestamp"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="GPITrigger" typeNum="403">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u8"    name="GPIPortNum"/>
+    <field     type="u1"    name="GPIEvent" enumeration="GPIEventType"/>
+    <reserved  bitCount="7"/>
+    <field     type="u32"   name="Timeout"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="SelectSpecStopTrigger" typeNum="404">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u8"    name="SelectSpecStopTriggerType" enumeration="SelectSpecStopTriggerType"/>
+    <field     type="u32"   name="DurationValue"/>
+    <parameter repeat="0-1" type="GPITrigger"/>
+  </parameterDefinition>
+
+  <enumerationDefinition name="SelectSpecStopTriggerType">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <entry     value="0"    name="Null"/>
+    <entry     value="1"    name="Duration"/>
+    <entry     value="2"    name="GPI_With_Timeout"/>
+  </enumerationDefinition>
+
+  <parameterDefinition name="AntennaSpec" typeNum="405">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u8v"   name="AntennaIDs"/>    
+    <parameter repeat="1"   type="AntennaSpecStopTrigger"/>
+    <parameter repeat="1-N" type="RfSpec"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="AntennaSpecStopTrigger" typeNum="406">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u8"    name="AntennaSpecStopTriggerType" enumeration="AntennaSpecStopTriggerType"/>    
+    <field     type="u32"   name="DurationValue"/>    
+    <parameter repeat="0-1" type="GPITrigger"/>
+    <parameter repeat="0-1" type="TagObservationTrigger"/>
+  </parameterDefinition>
+
+  <enumerationDefinition name="AntennaSpecStopTriggerType">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <entry     value="0"    name="Null"/>
+    <entry     value="1"    name="Duration"/>
+    <entry     value="2"    name="GPI_With_Timeout"/>
+    <entry     value="3"    name="Tag_Observation"/>
+  </enumerationDefinition>
+
+  <parameterDefinition name="TagObservationTrigger" typeNum="407">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u8"    name="TriggerType" enumeration="TagObservationTriggerType"/>    
+    <field     type="u16"   name="NumberOfTags"/>   
+    <field     type="u16"   name="NumberOfAttempts"/>    
+    <field     type="u16"   name="TValue"/>    
+    <field     type="u32"   name="Timeout"/>    
+  </parameterDefinition>
+
+  <enumerationDefinition name="TagObservationTriggerType">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <entry     value="0"    name="Upon_Seeing_N_Tags_Or_Timeout"/>
+    <entry     value="1"    name="Upon_Seeing_No_More_New_Tags_For_Tms_Or_Timeout"/>
+    <entry     value="2"    name="N_Attempts_To_See_All_Tags_In_FOV_Or_Timeout"/>
+  </enumerationDefinition>
+
+  <parameterDefinition name="RfSpec" typeNum="408">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u16"   name="RfSpecID"/>    
+    <field     type="u8"    name="ProtocolID" enumeration="AirProtocolType"/>   
+    <field     type="u8"    name="SelectType" enumeration="RfSpecSelectType"/>    
+    <parameter repeat="0-1" type="MemoryBank"/>
+    <parameter repeat="0-N" type="AntennaConfiguration"/>
+  </parameterDefinition>
+
+  <enumerationDefinition name="AirProtocolType">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <entry     value="0"    name="Hb"/>
+  </enumerationDefinition>
+
+  <enumerationDefinition name="RfSpecSelectType">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <entry     value="0"    name="Inventory"/>
+    <entry     value="1"    name="Read"/>
+  </enumerationDefinition>
+
+  <parameterDefinition name="MemoryBank" typeNum="409">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u8"    name="MemoryBankID" enumeration="HbSpecMemoryBankIDType"/>    
+	<field     type="u8"    name="ReadType" enumeration="HbReadType"/>
+    <field     type="u16"   name="Pointer"/>   
+    <field     type="u16"   name="Count"/>   
+	<field     type="u8"    name="BankType" enumeration="HbBankType"/>
+  </parameterDefinition>
+
+  <enumerationDefinition name="HbReadType">
+	<annotation>
+	  <documentation>
+	  </documentation>
+	</annotation>
+	<entry     value="0"    name="Read_As_Length"/>
+	<entry     value="1"    name="Read_As_Area_Type"/>
+  </enumerationDefinition>
+  
+   <enumerationDefinition name="HbBankType">
+	<annotation>
+	  <documentation>
+	  </documentation>
+	</annotation>
+	<entry     value="0"    name="Bottom_Half"/>
+	<entry     value="1"    name="UPPER_Half"/>
+	<entry     value="2"    name="Full"/>	
+  </enumerationDefinition> 
+  
+  <parameterDefinition name="SelectReportSpec" typeNum="410">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u8"    name="SelectReportTrigger" enumeration="SelectReportTriggerType"/>    
+    <field     type="u16"   name="NValue"/>    
+    <field     type="u1"    name="EnableSelectSpecID"/>    
+    <field     type="u1"    name="EnableSpecIndex"/>   
+    <field     type="u1"    name="EnableRfSpecID"/>   
+    <field     type="u1"    name="EnableAntennaID"/>   
+    <field     type="u1"    name="EnablePeakRSSI"/>   
+    <field     type="u1"    name="EnableFirstSeenTimestamp"/>   
+    <field     type="u1"    name="EnableLastSeenTimestamp"/>   
+    <field     type="u1"    name="EnableTagSeenCount"/>   
+    <field     type="u1"    name="EnableAccessSpecID"/> 
+    <reserved  bitCount="7"/>
+    <parameter repeat="0-1" type="ReportDestination"/>  
+  </parameterDefinition>
+
+  <enumerationDefinition name="SelectReportTriggerType">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <entry     value="0"    name="None"/>
+    <entry     value="1"    name="Upon_N_Tags_Or_End_Of_AntennaSpec"/>
+    <entry     value="2"    name="Upon_N_Tags_Or_End_Of_SelectSpec"/>
+    <entry     value="3"    name="No_ROReport"/>
+  </enumerationDefinition>
+ 
+  <parameterDefinition name="ReportDestination" typeNum="411">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <parameter repeat="1-N" type="CommLinkConfiguration"/>  
+  </parameterDefinition>
+
+  <messageDefinition name="AddAccessSpec" typeNum="450">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <parameter repeat="1"   type="AccessSpec"/>
+  </messageDefinition>  
+
+  <messageDefinition name="AddAccessSpecAck" typeNum="451">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <parameter repeat="1"   type="Status"/>
+  </messageDefinition> 
+  
+  <messageDefinition name="DeleteAccessSpec" typeNum="452">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u32"   name="AccessSpecID"/>
+  </messageDefinition>  
+
+  <messageDefinition name="DeleteAccessSpecAck" typeNum="453">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <parameter repeat="1"   type="Status"/>
+  </messageDefinition> 
+
+  <messageDefinition name="EnableAccessSpec" typeNum="454">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u32"   name="AccessSpecID"/>
+  </messageDefinition>  
+
+  <messageDefinition name="EnableAccessSpecAck" typeNum="455">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <parameter repeat="1"   type="Status"/>
+  </messageDefinition>
+
+  <messageDefinition name="DisableAccessSpec" typeNum="456">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u32"   name="AccessSpecID"/>
+  </messageDefinition>  
+
+  <messageDefinition name="DisableAccessSpecAck" typeNum="457">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <parameter repeat="1"   type="Status"/>
+  </messageDefinition>
+
+  <messageDefinition name="GetAccessSpec" typeNum="458">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+  </messageDefinition>  
+
+  <messageDefinition name="GetAccessSpecAck" typeNum="459">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <parameter repeat="1"   type="Status"/>
+    <parameter repeat="0-N" type="AccessSpec"/>
+  </messageDefinition>
+
+  <parameterDefinition name="AccessSpec" typeNum="450">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u32"   name="AccessSpecID"/>
+    <field     type="u32"   name="SelectSpecID"/>
+    <field     type="u8"    name="AntennaID"/>
+    <field     type="u8"    name="ProtocolID" enumeration="AirProtocolType"/>
+    <field     type="u1"    name="CurrentState" enumeration="AccessSpecState"/>
+    <field     type="u1"    name="Persistence"/>
+    <reserved  bitCount="6"/>
+    <parameter repeat="1"   type="AccessSpecStopTrigger"/>
+    <parameter repeat="1"   type="AccessCommand"/>
+    <parameter repeat="0-1" type="AccessReportSpec"/>
+  </parameterDefinition>
+
+  <enumerationDefinition name="AccessSpecState">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <entry     value="0"    name="Disabled"/>
+    <entry     value="1"    name="Active"/>
+  </enumerationDefinition>
+
+  <parameterDefinition name="AccessSpecStopTrigger" typeNum="451">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u8"    name="AccessSpecStopTriggerType" enumeration="AccessSpecStopTriggerType"/>
+    <field     type="u16"   name="OperationCountValue"/>
+  </parameterDefinition>
+
+  <enumerationDefinition name="AccessSpecStopTriggerType">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <entry     value="0"    name="Null"/>
+    <entry     value="1"    name="Operation_Count"/>
+  </enumerationDefinition>
+
+  <parameterDefinition name="AccessCommand" typeNum="452">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <choice    repeat="1"   type="MatchSpec"/> 
+    <choice    repeat="1-N" type="OpSpec"/> 
+    <parameter repeat="0-1" type="SecurityModuleSpec"/>
+  </parameterDefinition>
+
+  <choiceDefinition name="MatchSpec">
+    <parameter type="HbMatchSpec"/>
+  </choiceDefinition>
+
+  <choiceDefinition name="OpSpec">
+    <parameter type="HbReadSpec"/>
+    <parameter type="HbWriteSpec"/>
+    <parameter type="HbPrivateWriteSpec"/>
+    <parameter type="ClientRequestSpec"/>
+  </choiceDefinition>
+  
+  <parameterDefinition name="SecurityModuleSpec" typeNum="460">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <parameter repeat="1" type="ReadMode"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="HbMatchSpec" typeNum="453">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <parameter repeat="1-N" type="HbTargetTag"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="HbTargetTag" typeNum="454">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u8"    name="MemoryType" enumeration="HbTargetTagMemoryType"/>
+    <field     type="u1"    name="MatchType" enumeration="HbTargetTagMatchType"/>
+    <reserved  bitCount="7"/>
+    <field     type="u16"   name="Pointer"/>
+    <field     type="u1v"   name="TagMask"/>
+    <field     type="u1v"   name="TagData"/>
+  </parameterDefinition>
+
+  <enumerationDefinition name="HbTargetTagMemoryType">
+    <annotation>
+      <documentation>
+      </documentation>
+    </annotation>
+    <entry     value="0"    name="Tid"/>
+    <entry     value="1"    name="User"/>
+  </enumerationDefinition>
+
+  <enumerationDefinition name="HbTargetTagMatchType">
+    <annotation>
+      <documentation>
+      </documentation>
+    </annotation>
+    <entry     value="0"    name="Forward"/>
+    <entry     value="1"    name="Reverse"/>
+  </enumerationDefinition>
+
+  <parameterDefinition name="HbReadSpec" typeNum="455">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u16"   name="OpSpecID"/>
+	<parameter repeat="1"   type="MemoryBank"/>
+  </parameterDefinition>
+
+  <enumerationDefinition name="HbSpecMemoryBankIDType">
+    <annotation>
+      <documentation>
+      </documentation>
+    </annotation>
+    <entry     value="0"    name="User_0"/>
+    <entry     value="1"    name="User_1"/>
+    <entry     value="2"    name="User_2"/>
+    <entry     value="3"    name="User_3"/>
+    <entry     value="4"    name="User_4"/>  
+    <entry     value="5"    name="User_5"/>
+  </enumerationDefinition>
+
+  <parameterDefinition name="ClientRequestSpec" typeNum="456">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u16"   name="OpSpecID"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="AccessReportSpec" typeNum="457">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u8"    name="AccessReportTrigger" enumeration="AccessReportTriggerType"/>    
+    <parameter repeat="0-1" type="ReportDestination"/>  
+  </parameterDefinition>
+
+  <enumerationDefinition name="AccessReportTriggerType">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <entry     value="0"    name="Whenever_SelectReport_Is_Generated"/>
+    <entry     value="1"    name="End_Of_AccessSpec"/>
+  </enumerationDefinition>  
+
+  <parameterDefinition name="HbWriteSpec" typeNum="458">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u16"   name="OpSpecID"/>
+    <field     type="u8"    name="MemoryBankID" enumeration="HbSpecMemoryBankIDType"/>
+    <field     type="u16"   name="Pointer"/>
+    <field     type="u16v"  name="Data" format="Hex"/>  
+  </parameterDefinition>
+
+  <parameterDefinition name="HbPrivateWriteSpec" typeNum="459">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u16"   name="OpSpecID"/>
+    <field     type="u8"    name="WriteType"/>
+    <field     type="u16v"  name="Data" format="Hex"/>  
+  </parameterDefinition>
+
+  <messageDefinition name="TagSelectAccessReport" typeNum="500">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+	<parameter repeat="0-N" type="TagReportData"/>
+  </messageDefinition>  
+
+  <parameterDefinition name="TagReportData" typeNum="500">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u8v"   name="TID" format="Hex"/>    
+    <parameter repeat="0-1" type="SelectSpecID"/>  
+    <parameter repeat="0-1" type="SpecIndex"/>  
+    <parameter repeat="0-1" type="RfSpecID"/>  
+    <parameter repeat="0-1" type="AntennaID"/>  
+    <parameter repeat="0-1" type="PeakRSSI"/>  
+    <parameter repeat="0-1" type="FirstSeenTimestampUTC"/>  
+    <parameter repeat="0-1" type="LastSeenTimestampUTC"/>  
+    <parameter repeat="0-1" type="TagSeenCount"/>  
+    <parameter repeat="0-1" type="AccessSpecID"/>  
+    <choice    repeat="0-1" type="SelectSpecResult"/>  
+    <choice    repeat="0-N" type="AccessSpecResult"/> 
+  </parameterDefinition>
+
+  <choiceDefinition name="AccessSpecResult">
+    <parameter type="HbReadSpecResult"/>
+	<parameter type="HbCustomizedReadSpecResult"/>
+    <parameter type="HbWriteSpecResult"/>
+    <parameter type="HbPrivateWriteSpecResult"/>
+    <parameter type="ClientRequestSpecResult"/>
+  </choiceDefinition>
+
+  <parameterDefinition name="SelectSpecID" typeNum="501">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u32"   name="SelectSpecID"/>    
+  </parameterDefinition>
+
+  <parameterDefinition name="SpecIndex" typeNum="502">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u16"   name="SpecIndex"/>    
+  </parameterDefinition>
+
+  <parameterDefinition name="RfSpecID" typeNum="503">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u16"   name="RfSpecID"/>    
+  </parameterDefinition>
+
+  <parameterDefinition name="AntennaID" typeNum="504">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u8"    name="AntennaID"/>    
+  </parameterDefinition>
+
+  <parameterDefinition name="PeakRSSI" typeNum="505">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="s8"    name="PeakRSSI"/>    
+  </parameterDefinition>
+
+  <parameterDefinition name="FirstSeenTimestampUTC" typeNum="506">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u64"   name="Microseconds"/>    
+  </parameterDefinition>
+
+  <parameterDefinition name="LastSeenTimestampUTC" typeNum="507">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u64"   name="Microseconds"/>    
+  </parameterDefinition>
+
+  <parameterDefinition name="TagSeenCount" typeNum="508">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u16"   name="TagCount"/>    
+  </parameterDefinition>
+
+  <parameterDefinition name="AccessSpecID" typeNum="509">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u32"   name="AccessSpecID"/>    
+  </parameterDefinition>
+
+  <choiceDefinition name="SelectSpecResult">
+    <parameter type="GenaralSelectSpecResult"/>
+    <parameter type="CustomizedSelectSpecResult"/>
+  </choiceDefinition>
+
+  <parameterDefinition name="GenaralSelectSpecResult" typeNum="510">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u8"    name="Result"/>  
+    <field     type="u16v"  name="TagData" format="Hex"/>    
+  </parameterDefinition>   
+
+  <parameterDefinition name="CustomizedSelectSpecResult" typeNum="517">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u8"    name="Result"/>  
+    <parameter repeat="0-1"   type="ReadDataInfo"/>  
+  </parameterDefinition>    
+  
+  <parameterDefinition name="HbReadSpecResult" typeNum="511">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u8"    name="Result"/>  
+    <field     type="u16"   name="OpSpecID"/>    
+    <field     type="u16v"  name="ReadData" format="Hex"/>    
+  </parameterDefinition>  
+  
+  <parameterDefinition name="ClientRequestSpecResult" typeNum="512">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u16"   name="OpSpecID"/>    
+  </parameterDefinition>  
+
+  <parameterDefinition name="HbWriteSpecResult" typeNum="513">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u8"    name="Result"/>  
+    <field     type="u8v"   name="ResultDescription" format="Hex"/>
+    <field     type="u16"   name="OpSpecID"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="HbPrivateWriteSpecResult" typeNum="514">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u8"    name="Result"/>  
+    <field     type="u8v"   name="ResultDescription" format="Hex"/>
+    <field     type="u16"   name="OpSpecID"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="HbCustomizedReadSpecResult" typeNum="515">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u8"    name="Result"/>  
+    <field     type="u16"   name="OpSpecID"/>
+    <parameter repeat="0-1"   type="ReadDataInfo"/>    
+  </parameterDefinition>    
+  
+  <parameterDefinition name="ReadDataInfo" typeNum="516">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <parameter repeat="0-1"   type="CID"/>   
+    <parameter repeat="0-1"   type="FPDH"/>
+    <parameter repeat="0-1"   type="SYXZ"/>
+    <parameter repeat="0-1"   type="CCRQ"/>	
+    <parameter repeat="0-1"   type="CLLX"/>	
+    <parameter repeat="0-1"   type="PL"/>	
+    <parameter repeat="0-1"   type="GL"/>	
+    <parameter repeat="0-1"   type="HPZL"/>	
+    <parameter repeat="0-1"   type="HPHMXH"/>	
+    <parameter repeat="0-1"   type="JYYXQ"/>	
+    <parameter repeat="0-1"   type="QZBFQ"/>	
+    <parameter repeat="0-1"   type="CSYS"/>	
+    <parameter repeat="0-1"   type="ZKZL"/>		
+  </parameterDefinition>
+
+  <parameterDefinition name="CID" typeNum="1001">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u8v"   name="CIDData" format="Hex"/>   	
+  </parameterDefinition>  
+  
+  <parameterDefinition name="FPDH" typeNum="1002">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u8v"   name="FPDHData" format="Hex"/>   	
+  </parameterDefinition>   
+  
+  <parameterDefinition name="SYXZ" typeNum="1003">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u8v"   name="SYXZData" format="Hex"/>   	
+  </parameterDefinition>   
+  
+  <parameterDefinition name="CCRQ" typeNum="1004">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u8v"   name="CCRQData" format="Hex"/>   	
+  </parameterDefinition>
+
+  <parameterDefinition name="CLLX" typeNum="1005">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u8v"   name="CLLXData" format="Hex"/>   	
+  </parameterDefinition>  
+
+  <parameterDefinition name="GL" typeNum="1006">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u8v"   name="GLData" format="Hex"/>   	
+  </parameterDefinition> 
+
+  <parameterDefinition name="PL" typeNum="1007">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u8v"   name="PLData" format="Hex"/>   	
+  </parameterDefinition>
+
+  <parameterDefinition name="HPZL" typeNum="1008">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u8v"   name="HPZLData" format="Hex"/>   	
+  </parameterDefinition> 
+
+  <parameterDefinition name="HPHMXH" typeNum="1009">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u8v"   name="HPHMXHData" format="Hex"/>   	
+  </parameterDefinition>    
+ 
+  <parameterDefinition name="JYYXQ" typeNum="1010">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u8v"   name="JYYXQData" format="Hex"/>   	
+  </parameterDefinition> 
+ 
+  <parameterDefinition name="QZBFQ" typeNum="1011">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u8v"   name="QZBFQData" format="Hex"/>   	
+  </parameterDefinition>  
+  
+  <parameterDefinition name="ZKZL" typeNum="1012">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u8v"   name="ZKZLData" format="Hex"/>   	
+  </parameterDefinition> 
+
+  <parameterDefinition name="CSYS" typeNum="1013">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u8v"   name="CSYSData" format="Hex"/>   	
+  </parameterDefinition>  
+ 
+  <messageDefinition name="EnableCachedEventsAndReport" typeNum="580">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+  </messageDefinition>   
+ 
+  <messageDefinition name="CachedSelectAccessReport" typeNum="581">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <parameter repeat="1"   type="Status"/>
+    <field     type="u16"   name="SequenceID"/>
+	<field     type="u8"    name="IsLastedFrame" enumeration="EnumIsLastedFrame"/>
+	<parameter repeat="0-N" type="TagReportData"/>
+  </messageDefinition>   
+ 
+  <messageDefinition name="CachedSelectAccessReportAck" typeNum="582">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u16"   name="SequenceID"/>
+  </messageDefinition>   
+ 
+   <enumerationDefinition name="EnumIsLastedFrame">
+    <annotation>
+      <documentation>
+      </documentation>
+    </annotation>
+    <entry     value="0"    name="Continue"/>
+    <entry     value="1"    name="End"/>
+  </enumerationDefinition>
+ 
+  <messageDefinition name="ClientRequestOp" typeNum="590">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <parameter repeat="1"   type="TagReportData"/>
+  </messageDefinition>  
+
+  <messageDefinition name="ClientRequestOpAck" typeNum="591">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <parameter repeat="1"   type="ClientRequestAck"/>
+  </messageDefinition> 
+
+  <parameterDefinition name="ClientRequestAck" typeNum="590">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u32"   name="AccessSpecID"/>
+    <field     type="u8v"   name="TID" format="Hex"/>
+    <choice    repeat="0-N" type="OpSpec"/>
+  </parameterDefinition>
+
+  <messageDefinition name="DeviceBinding" typeNum="600">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u8"    name="BindingType" enumeration="DeviceBindingType"/>
+    <field     type="u8v"   name="BindingData" format="Hex"/>
+  </messageDefinition>  
+
+  <enumerationDefinition name="DeviceBindingType">
+    <annotation>
+      <documentation>
+      </documentation>
+    </annotation>
+    <entry     value="1"    name="Binding"/>
+    <entry     value="2"    name="ReBinding"/>
+  </enumerationDefinition>
+
+  <messageDefinition name="DeviceBindingAck" typeNum="601">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>    
+    <field     type="u8v"   name="BindingResultData" format="Hex"/>
+    <parameter repeat="1"   type="Status"/>
+  </messageDefinition> 
+
+  <messageDefinition name="DeviceCertificateConfig" typeNum="602">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u8v"    name="CertificateData" format="Hex"/>
+    <field     type="u8v"   name="UserData" format="Hex"/>
+  </messageDefinition> 
+
+  <messageDefinition name="DeviceCertificateConfigAck" typeNum="603">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>    
+    <parameter repeat="1"   type="Status"/>
+  </messageDefinition>
+     
+  <messageDefinition name="DeviceBindingResultNotification" typeNum="604">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>  
+    <parameter repeat="1"   type="Status"/>
+  </messageDefinition>  	 
+	 
+  <messageDefinition name="UploadTagLog" typeNum="620">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>    
+    <field     type="u8"    name="UploadType" enumeration="UploadTagLogType"/>
+    <field     type="u32"   name="UploadCount"/>
+    <field     type="u32"   name="Milliseconds"/>  
+    <parameter repeat="0-1" type="StartLogTimestamp"/>
+    <parameter repeat="0-1" type="EndLogTimestamp"/>    
+  </messageDefinition> 
+
+  <enumerationDefinition name="UploadTagLogType">
+    <annotation>
+      <documentation>
+      </documentation>
+    </annotation>
+    <entry     value="0"    name="According_To_Sequence"/>
+    <entry     value="1"    name="According_To_Timestamp"/>
+	<entry     value="2"    name="According_To_Timer"/>
+  </enumerationDefinition>
+
+  <messageDefinition name="UploadTagLogAck" typeNum="621">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>    
+    <parameter repeat="1"   type="Status"/>
+	<field     type="u16"   name="SequenceId"/>
+	<field     type="u8"    name="IsLastedFrame" enumeration="EnumIsLastedFrame"/>
+    <parameter repeat="0-N" type="TagLog"/>
+  </messageDefinition> 
+  
+  <messageDefinition name="UploadTagLogConfirm" typeNum="626">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u16"   name="SequenceId"/>    
+  </messageDefinition>   
+  
+  <messageDefinition name="ClearTagLog" typeNum="622">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>    
+  </messageDefinition> 
+
+  <messageDefinition name="ClearTagLogAck" typeNum="623">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>    
+    <parameter repeat="1"   type="Status"/>
+  </messageDefinition> 
+
+  <parameterDefinition name="TagLog" typeNum="620">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u64"   name="LogSequence"/>    
+    <field     type="u8v"   name="TID" format="Hex"/>
+    <field     type="u8v"   name="CardID" format="Hex"/>
+    <field     type="u32"   name="OpNum"/>
+    <parameter repeat="1"   type="UTCTimestamp"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="StartLogTimestamp" typeNum="621">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u64"   name="Microseconds"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="EndLogTimestamp" typeNum="622">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u64"   name="Microseconds"/>
+  </parameterDefinition>
+
+  <messageDefinition name="TagLogCount" typeNum="624">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation> 
+  </messageDefinition>    
+  
+  <messageDefinition name="TagLogCountAck" typeNum="625">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <parameter repeat="1"   type="Status"/>    
+    <field     type="u32"   name="LogCount"/>  
+  </messageDefinition>   
+  
+  <messageDefinition name="UploadDeviceLog" typeNum="640">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>    
+    <field     type="u8"    name="UploadType" enumeration="UploadDeviceLogType"/>
+    <field     type="u32"   name="UploadCount"/>
+    <field     type="u32"   name="Milliseconds"/>
+    <parameter repeat="0-1" type="StartLogTimestamp"/>
+    <parameter repeat="0-1" type="EndLogTimestamp"/>    
+  </messageDefinition> 
+
+  <enumerationDefinition name="UploadDeviceLogType">
+    <annotation>
+      <documentation>
+      </documentation>
+    </annotation>
+    <entry     value="0"    name="According_To_Sequence"/>
+    <entry     value="1"    name="According_To_Timestamp"/>
+	<entry     value="2"    name="According_To_Timer"/>
+  </enumerationDefinition>
+
+  <messageDefinition name="UploadDeviceLogAck" typeNum="641">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>    
+    <parameter repeat="1"   type="Status"/>
+	<field     type="u16"   name="SequenceId"/>
+	<field     type="u8"    name="IsLastedFrame" enumeration="EnumIsLastedFrame"/>
+    <parameter repeat="0-N" type="DeviceLog"/>
+  </messageDefinition> 
+
+  <messageDefinition name="UploadDeviceLogConfirm" typeNum="646">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>    
+	<field     type="u16"   name="SequenceId"/>
+  </messageDefinition>   
+  
+   <messageDefinition name="DeviceLogCount" typeNum="644">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>    
+  </messageDefinition>  
+  
+   <messageDefinition name="DeviceLogCountAck" typeNum="645">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <parameter repeat="1"   type="Status"/>    
+    <field     type="u32"   name="LogCount"/>     
+  </messageDefinition>   
+  
+  <messageDefinition name="ClearDeviceLog" typeNum="642">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>    
+  </messageDefinition> 
+
+  <messageDefinition name="ClearDeviceLogAck" typeNum="643">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>    
+    <parameter repeat="1"   type="Status"/>
+  </messageDefinition> 
+
+  <parameterDefinition name="DeviceLog" typeNum="640">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u64"   name="LogSequence"/>    
+    <field     type="u8"    name="LogType" enumeration="DeviceLogType"/>
+    <field     type="u32"   name="LogCode"/>
+    <field     type="utf8v" name="LogDescInfo" format="UTF8"/>
+    <parameter repeat="1"   type="UTCTimestamp"/>
+  </parameterDefinition>
+
+  <enumerationDefinition name="DeviceLogType">
+    <annotation>
+      <documentation>
+      </documentation>
+    </annotation>
+    <entry     value="0"    name="Device_Failure"/>
+    <entry     value="1"    name="Failure_Recovery"/>
+    <entry     value="2"    name="Running_Log"/>
+  </enumerationDefinition>
+
+  <messageDefinition name="GetDeviceConfig" typeNum="660">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>    
+    <field     type="u8"    name="RequestedData" enumeration="GetDeviceConfigRequestedDataType"/>
+    <field     type="u8"    name="AntennaID"/>
+  </messageDefinition> 
+
+  <enumerationDefinition name="GetDeviceConfigRequestedDataType">
+    <annotation>
+      <documentation>
+      </documentation>
+    </annotation>
+    <entry     value="0"    name="All"/>
+    <entry     value="1"    name="Identification"/>
+    <entry     value="2"    name="DeviceEventNotificationSpec"/>    
+    <entry     value="3"    name="CommunicationConfiguration"/>
+    <entry     value="4"    name="AlarmConfiguration"/>
+    <entry     value="5"    name="AntennaProperties"/>
+    <entry     value="6"    name="AntennaConfiguration"/>
+    <entry     value="7"    name="ModuleDepth"/>
+    <entry     value="8"    name="SelectReportSpec"/>
+    <entry     value="9"    name="AccessReportSpec"/>    
+    <entry     value="10"    name="LocationConfiguration"/>
+    <entry     value="11"    name="SecurityModuleConfiguration"/>
+  </enumerationDefinition>
+
+  <messageDefinition name="GetDeviceConfigAck" typeNum="661">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <parameter repeat="1"   type="Status"/>
+	<parameter repeat="0-1" type="Identification"/>
+	<parameter repeat="0-1" type="DeviceEventNotificationSpec"/>    
+	<parameter repeat="0-1" type="AlarmConfiguration"/>
+	<parameter repeat="0-N" type="AntennaProperties"/>
+	<parameter repeat="0-N" type="AntennaConfiguration"/>
+    <parameter repeat="0-1" type="ModuleDepth"/>
+    <parameter repeat="0-1" type="SelectReportSpec"/>
+    <parameter repeat="0-1" type="AccessReportSpec"/>    
+    <parameter repeat="0-1" type="CommunicationConfiguration"/>
+    <parameter repeat="0-1" type="LocationConfiguration"/>
+    <parameter repeat="0-1" type="SecurityModuleConfiguration"/>
+  </messageDefinition>
+
+  <messageDefinition name="SetDeviceConfig" typeNum="662">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u1"    name="ResetToFactoryDefault"/>
+    <reserved  bitCount="7"/>
+	<parameter repeat="0-1" type="Identification"/>
+	<parameter repeat="0-1" type="DeviceEventNotificationSpec"/>    
+	<parameter repeat="0-1" type="AlarmConfiguration"/>
+	<parameter repeat="0-N" type="AntennaConfiguration"/>
+    <parameter repeat="0-1" type="ModuleDepth"/>
+    <parameter repeat="0-1" type="SelectReportSpec"/>
+    <parameter repeat="0-1" type="AccessReportSpec"/>    
+    <parameter repeat="0-1" type="CommunicationConfiguration"/>
+    <parameter repeat="0-1" type="LocationConfiguration"/>
+    <parameter repeat="0-1" type="SecurityModuleConfiguration"/>
+  </messageDefinition>
+
+  <messageDefinition name="SetDeviceConfigAck" typeNum="663">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+	<parameter repeat="1"   type="Status"/>
+  </messageDefinition>
+
+  <parameterDefinition name="DeviceEventNotificationSpec" typeNum="660">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <parameter repeat="1-N" type="EventNotificationState"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="EventNotificationState" typeNum="661">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u16"   name="EventType" enumeration="EventNotificationType"/>
+    <field     type="u1"    name="NotificationState"/>
+    <reserved  bitCount="7"/>
+  </parameterDefinition>
+
+  <enumerationDefinition name="EventNotificationType">
+    <annotation>
+      <documentation>
+      </documentation>
+    </annotation>
+    <entry     value="0"    name="GPI_Event"/>
+    <entry     value="1"    name="SelectSpec_Event"/>
+    <entry     value="2"    name="AntennaSpec_Event"/>
+    <entry     value="3"    name="AntennaStatus_Event"/>
+  </enumerationDefinition>
+
+  <parameterDefinition name="AntennaProperties" typeNum="662">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u1"    name="AntennaConnected"/>
+    <reserved  bitCount="7"/>
+    <field     type="u8"   name="AntennaID"/>
+    <field     type="s16"  name="AntennaGain"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="AntennaConfiguration" typeNum="663">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u8"   name="AntennaID"/>
+    <field     type="u16"  name="TransmitPowerIndex"/>
+    <field     type="u16v" name="FrequencyIndexes"/>
+    <field     type="u16"  name="ForDataRateIndex"/>
+    <field     type="u16"  name="RevDataRateIndex"/>
+    <field     type="u16"  name="ForModulationIndex"/>
+    <field     type="u16"  name="RevDataEncodingIndex"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="ModuleDepth" typeNum="664">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u16"  name="Index"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="Identification" typeNum="665">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="utf8v" name="DeviceName" format="UTF8"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="AlarmConfiguration" typeNum="666">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u8"    name="AlarmMask"/>
+    <parameter repeat="0-1" type="AlarmThreshod"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="AlarmThreshod" typeNum="667">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="s8"    name="TemperatureMaxValue"/>
+    <field     type="s8"    name="TemperatureMinValue"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="CommunicationConfiguration" typeNum="668">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <parameter repeat="0-N" type="CommLinkConfiguration"/>
+    <choice    repeat="0-N" type="EthernetConfiguration"/> 
+    <parameter repeat="0-N" type="SerialPortConfiguration"/>
+    <parameter repeat="0-1" type="NTPConfiguration"/>
+  </parameterDefinition>
+
+  <choiceDefinition name="EthernetConfiguration">
+    <parameter type="EthernetIpv4Configuration"/>
+    <parameter type="EthernetIpv6Configuration"/>
+  </choiceDefinition>
+
+  <parameterDefinition name="CommLinkConfiguration" typeNum="669">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u8"    name="LinkType" enumeration="CommLinkType"/>
+    <parameter repeat="1"   type="KeepaliveSpec"/>
+    <parameter repeat="0-1" type="TcpLinkConfiguration"/>
+    <parameter repeat="0-1" type="SerialLinkConfiguration"/>
+    <parameter repeat="0-1" type="HttpLinkConfiguration"/>
+  </parameterDefinition>
+
+  <enumerationDefinition name="CommLinkType">
+    <annotation>
+      <documentation>
+      </documentation>
+    </annotation>
+    <entry     value="0"    name="Tcp"/>
+    <entry     value="1"    name="Rs232"/>
+    <entry     value="2"    name="Rs485"/>
+    <entry     value="3"    name="Http"/>
+  </enumerationDefinition>
+
+  <parameterDefinition name="KeepaliveSpec" typeNum="670">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u8"    name="KeepaliveTriggerType" enumeration="KeepaliveTriggerType"/>
+    <field     type="u32"   name="PeriodicTriggerValue"/>
+  </parameterDefinition>
+
+  <enumerationDefinition name="KeepaliveTriggerType">
+    <annotation>
+      <documentation>
+      </documentation>
+    </annotation>
+    <entry     value="0"    name="Null"/>
+    <entry     value="1"    name="Periodic"/>
+  </enumerationDefinition>
+
+  <parameterDefinition name="TcpLinkConfiguration" typeNum="671">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u8"    name="CommMode" enumeration="TcpLinkCommMode"/>
+    <field     type="u1"    name="IsSSL"/>
+    <reserved  bitCount="7"/>
+    <parameter repeat="0-1" type="ClientModeConfiguration"/>
+    <parameter repeat="0-1" type="ServerModeConfiguration"/>
+  </parameterDefinition>
+
+  <enumerationDefinition name="TcpLinkCommMode">
+    <annotation>
+      <documentation>
+      </documentation>
+    </annotation>
+    <entry     value="0"    name="Client"/>
+    <entry     value="1"    name="Server"/>
+    <entry     value="2"    name="Mix"/>
+  </enumerationDefinition>
+
+  <parameterDefinition name="ClientModeConfiguration" typeNum="672">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>        
+    <field     type="u16"   name="Port"/>
+    <parameter repeat="1"   type="IPAddress"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="IPAddress" typeNum="673">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>       
+    <field     type="u8"    name="Version" enumeration="IPAddressVersion"/>
+    <field     type="u32v"  name="Address"/>
+  </parameterDefinition>
+
+  <enumerationDefinition name="IPAddressVersion">
+    <annotation>
+      <documentation>
+      </documentation>
+    </annotation>
+    <entry     value="0"    name="Ipv4"/>
+    <entry     value="1"    name="Ipv6"/>
+  </enumerationDefinition>
+
+  <parameterDefinition name="ServerModeConfiguration" typeNum="674">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>    
+    <field     type="u16"   name="Port"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="SerialLinkConfiguration" typeNum="675">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>    
+    <field     type="u8"    name="IfIndex"/>
+    <field     type="u8"    name="SrcAddr"/>
+    <field     type="u8"    name="DstAddr"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="HttpLinkConfiguration" typeNum="676">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>    
+    <field     type="utf8v" name="ServerUrl" format="UTF8"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="EthernetIpv4Configuration" typeNum="677">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>    
+    <field     type="u8"    name="IfIndex"/>
+    <field     type="u32"   name="IPAddress"/>
+    <field     type="u32"   name="IPMask"/>
+    <field     type="u32"   name="GateWayAddr"/>
+    <field     type="u32"   name="DNSAddr"/>
+    <field     type="u1"    name="IsDHCP"/>
+    <reserved  bitCount="7"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="EthernetIpv6Configuration" typeNum="678">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>    
+    <field     type="u8"    name="IfIndex"/>
+    <field     type="u32v"  name="IPAddress"/>
+    <field     type="u8"    name="IPMask"/>
+    <field     type="u32v"  name="GateWayAddr"/>
+    <field     type="u32v"  name="DNSAddr"/>
+    <field     type="u1"    name="IsDHCP"/>
+    <reserved  bitCount="7"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="NTPConfiguration" typeNum="679">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u32"   name="NtpPeriodicTime"/>
+    <parameter repeat="1-N" type="IPAddress"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="SerialPortConfiguration" typeNum="680">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u8"    name="IfIndex"/>
+    <field     type="u8"    name="AttributeIndex"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="LocationConfiguration" typeNum="681">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u8"    name="LocationType" enumeration="ReaderLocationType"/>
+    <choice    repeat="1"   type="LocationInfo"/>
+  </parameterDefinition>
+  
+  <enumerationDefinition name="ReaderLocationType">
+    <annotation>
+      <documentation>
+      </documentation>
+    </annotation>
+    <entry     value="0"    name="Location_GPS"/>
+    <entry     value="1"    name="Location_BDS"/>
+  </enumerationDefinition>
+  
+  <choiceDefinition name="LocationInfo">
+    <parameter type="GpsLocation"/>
+    <parameter type="BdsLocation"/>
+  </choiceDefinition>
+  
+  <parameterDefinition name="GpsLocation" typeNum="682">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>    
+    <field     type="s32"   name="Longitude"/>
+    <field     type="s32"   name="Latitude"/>
+    <field     type="s32"   name="Altitude"/>
+  </parameterDefinition>
+  
+  <parameterDefinition name="BdsLocation" typeNum="683">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>    
+    <field     type="s32"   name="Longitude"/>
+    <field     type="s32"   name="Latitude"/>
+    <field     type="s32"   name="Altitude"/>
+  </parameterDefinition>
+  
+  <parameterDefinition name="SecurityModuleConfiguration" typeNum="684">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+	<parameter repeat="0-1" type="GenaralConfigData"/>
+	<parameter repeat="0-1" type="PrivateConfigData"/>
+  </parameterDefinition>
+  
+  <parameterDefinition name="GenaralConfigData" typeNum="685">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <parameter repeat="0-1" type="RTCTime"/>
+    <parameter repeat="0-1" type="SecurityModuleSN"/>
+    <parameter repeat="0-1" type="ReadMode"/>
+  </parameterDefinition>
+  
+  <parameterDefinition name="RTCTime" typeNum="686">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+	<field     type="u64"   name="Seconds"/>
+  </parameterDefinition> 
+  
+  <parameterDefinition name="SecurityModuleSN" typeNum="687">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+	<field     type="u8v"   name="SerialNumber"/>
+  </parameterDefinition>   
+  
+  <parameterDefinition name="ReadMode" typeNum="688">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+	<field     type="u1"    name="RepeatReadFlag"/>
+	<reserved  bitCount="7"/>
+	<field     type="u32"    name="Timer"/>
+  </parameterDefinition>     
+  
+  <parameterDefinition name="PrivateConfigData" typeNum="690">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u8v"   name="ConfigData"/>
+  </parameterDefinition>  
+  
+  <messageDefinition name="GetVersion" typeNum="700">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u8"    name="VerType" enumeration="VersionType"/>
+  </messageDefinition> 
+
+  <enumerationDefinition name="VersionType">
+    <annotation>
+      <documentation>
+      </documentation>
+    </annotation>
+    <entry     value="0"    name="Device_Boot"/>
+    <entry     value="1"    name="Device_Sys"/>
+    <entry     value="2"    name="Security_Module_Sys"/>
+    <entry     value="3"    name="Security_Chip_Sys"/>
+    <entry     value="4"    name="Security_Module_Pwd"/>
+  </enumerationDefinition>
+
+  <messageDefinition name="GetVersionAck" typeNum="701">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <parameter repeat="1"   type="Status"/>
+    <parameter repeat="0-N" type="VersionInfo"/>
+  </messageDefinition> 
+
+  <messageDefinition name="SetVersion" typeNum="702">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u8"    name="VerType" enumeration="VersionType"/>
+    <parameter repeat="1"   type="VersionDownload"/>
+  </messageDefinition> 
+
+  <messageDefinition name="SetVersionAck" typeNum="703">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <parameter repeat="1"   type="Status"/>
+  </messageDefinition> 
+
+  <messageDefinition name="ActiveVersion" typeNum="704">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u8"    name="VerType" enumeration="VersionType"/>
+  </messageDefinition> 
+
+  <messageDefinition name="ActiveVersionAck" typeNum="705">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <parameter repeat="1"   type="Status"/>
+  </messageDefinition> 
+
+  <messageDefinition name="UnActiveVersion" typeNum="706">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u8"    name="VerType" enumeration="VersionType"/>
+  </messageDefinition> 
+
+  <messageDefinition name="UnActiveVersionAck" typeNum="707">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <parameter repeat="1"   type="Status"/>
+  </messageDefinition> 
+
+  <parameterDefinition name="VersionInfo" typeNum="700">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u8v"   name="VersionData"/>
+    <field     type="u1"    name="UsedOrSpare"/>
+    <field     type="u1"    name="SetUse"/>
+    <field     type="u1"    name="HasRun"/>
+    <field     type="u1"    name="CanRun"/>
+    <reserved  bitCount="4"/>
+    <field     type="utf8v" name="VerDescInfo" format="UTF8"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="VersionDownload" typeNum="701">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u8"    name="ServerType" enumeration="VersionDownloadServerType"/>        
+    <field     type="utf8v" name="UserName"/>
+    <field     type="utf8v" name="UserPass"/>
+    <field     type="utf8v" name="VersionPath"/>
+    <field     type="u16"    name="ServerPort"/>
+    <parameter repeat="1"   type="IPAddress"/>
+  </parameterDefinition>
+
+  <enumerationDefinition name="VersionDownloadServerType">
+    <annotation>
+      <documentation>
+      </documentation>
+    </annotation>
+    <entry     value="0"    name="Ftp"/>
+    <entry     value="1"    name="Tftp"/>
+  </enumerationDefinition>
+
+  <messageDefinition name="AlarmReport" typeNum="720">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>    
+    <field     type="u32"   name="AlarmID"/>
+    <parameter repeat="1"   type="AlarmReportInfo"/>
+  </messageDefinition> 
+
+  <messageDefinition name="AlarmRestore" typeNum="721">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>    
+    <field     type="u32"   name="AlarmID"/>
+    <parameter repeat="1"   type="AlarmRestoreInfo"/>
+  </messageDefinition> 
+
+  <messageDefinition name="AlarmDelete" typeNum="722">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>    
+    <field     type="u32"   name="AlarmID"/>
+  </messageDefinition> 
+
+  <messageDefinition name="AlarmSync" typeNum="723">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>    
+    <parameter repeat="1"   type="AlarmSyncInfo"/>
+  </messageDefinition> 
+
+  <parameterDefinition name="AlarmReportInfo" typeNum="720">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u32"   name="AlarmReportCode"/>
+    <field     type="u32"   name="AlarmReportReason"/>
+    <field     type="u8"    name="AlarmReportLevel" enumeration="AlarmReportLevel"/>
+    <field     type="u32"   name="AlarmReportSeconds"/>
+    <field     type="utf8v" name="AlarmReportDescription" format="UTF8"/>
+  </parameterDefinition>
+
+  <enumerationDefinition name="AlarmReportLevel">
+    <annotation>
+      <documentation>
+      </documentation>
+    </annotation>
+    <entry     value="0"    name="Fatal"/>
+    <entry     value="1"    name="Serious"/>
+    <entry     value="2"    name="Common"/>
+    <entry     value="3"    name="Slight"/>
+    <entry     value="4"    name="Info"/>
+  </enumerationDefinition>
+
+  <parameterDefinition name="AlarmRestoreInfo" typeNum="721">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u8"    name="AlarmRestoreType" enumeration="AlarmRestoreType"/>
+    <field     type="u32"   name="AlarmRestoreSeconds"/>
+  </parameterDefinition>
+
+  <enumerationDefinition name="AlarmRestoreType">
+    <annotation>
+      <documentation>
+      </documentation>
+    </annotation>
+    <entry     value="0"    name="Auto"/>
+    <entry     value="1"    name="Sync"/>
+    <entry     value="2"    name="Manual"/>
+  </enumerationDefinition>
+
+  <parameterDefinition name="AlarmSyncInfo" typeNum="722">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u32"   name="AlarmSyncSeq"/>
+    <field     type="u8"    name="AlarmSyncType"/>
+    <field     type="u16"   name="AlarmSyncPackageNo"/>
+    <field     type="u16"   name="AlarmSyncPackageNum"/>
+    <field     type="u32v"  name="AlarmIDs"/>
+  </parameterDefinition>
+
+  <messageDefinition name="DiagnosticTest" typeNum="740">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>    
+    <parameter repeat="1-N" type="DiagnosticTestItem"/>
+  </messageDefinition> 
+
+  <messageDefinition name="DiagnosticTestAck" typeNum="741">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>    
+    <parameter repeat="1"   type="Status"/>
+    <parameter repeat="0-N" type="DiagnosticTestResultItem"/>
+  </messageDefinition> 
+
+  <parameterDefinition name="DiagnosticTestItem" typeNum="740">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u16"   name="DiagnosticTestID"/>
+    <choice    repeat="0-1" type="DiagnosticTestData"/> 
+  </parameterDefinition>
+
+  <choiceDefinition name="DiagnosticTestData">
+  </choiceDefinition>
+
+  <parameterDefinition name="DiagnosticTestResultItem" typeNum="741">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u16"   name="DiagnosticTestID"/>
+    <field     type="u32"   name="DiagnosticTestResultCode"/>
+    <choice    repeat="0-1" type="DiagnosticTestResultData"/> 
+  </parameterDefinition>
+
+  <choiceDefinition name="DiagnosticTestResultData">
+    <parameter type="DiagnosticTestResultAntennaConnected"/>
+    <parameter type="DiagnosticTestResultAntennaVSWR"/>
+  </choiceDefinition>
+
+  <parameterDefinition name="DiagnosticTestResultAntennaConnected" typeNum="742">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u8"    name="AntennaID"/>
+    <field     type="u1"    name="AntennaConnected"/>
+    <reserved  bitCount="7"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="DiagnosticTestResultAntennaVSWR" typeNum="743">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <field     type="u8"    name="AntennaID"/>
+    <field     type="u16"   name="AntennaVSWR"/>
+  </parameterDefinition>
+
+  <messageDefinition name="ResetDevice" typeNum="760">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+  </messageDefinition>
+
+  <messageDefinition name="ResetDeviceAck" typeNum="761">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <parameter repeat="1"   type="Status"/>
+  </messageDefinition>
+</uhfdef>

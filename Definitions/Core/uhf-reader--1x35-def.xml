@@ -24,8 +24,8 @@
  -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  -->
 
-<llrpdef
-    xmlns="http://www.llrp.org/ltk/schema/core/encoding/binary/1.0"
+<uhfdef
+    xmlns="http://www.tmri.cn"
    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
    xmlns:h="http://www.w3.org/1999/xhtml"
     xmlns:llrpdef="http://www.llrp.org/ltk/schema/core/encoding/binary/1.0"
@@ -33,7 +33,7 @@
 >
 
   <namespaceDefinition
-    prefix="llrp"
+    prefix="uhf"
     URI="http://www.llrp.org/ltk/schema/core/encoding/xml/1.0"
     schemaLocation="http://www.llrp.org/ltk/schema/core/encoding/xml/1.0/llrp.xsd"/>
 
@@ -3583,4 +3583,4 @@
     <parameter repeat="1"   type="Status"/>
   </messageDefinition>
 
-</llrpdef>
+</uhfdef>

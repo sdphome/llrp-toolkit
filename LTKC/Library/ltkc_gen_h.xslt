@@ -20,7 +20,7 @@
 
 <xsl:stylesheet
         version='1.0'
-        xmlns:LL="http://www.llrp.org/ltk/schema/core/encoding/binary/1.0"
+        xmlns:LL="http://www.tmri.cn"
         xmlns:xsl='http://www.w3.org/1999/XSL/Transform'>
 <xsl:output omit-xml-declaration='yes' method='text' encoding='iso-8859-1'/>
 
@@ -34,7 +34,7 @@
  -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  -->
 
-<xsl:template match='/LL:llrpdef'>
+<xsl:template match='/LL:uhfdef'>
 <xsl:call-template name='FileHeader'/>
 <xsl:call-template name='ForwardDeclStructMessages'/>
 <xsl:call-template name='ForwardDeclStructParameters'/>

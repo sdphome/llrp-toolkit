@@ -20,7 +20,7 @@
 
 <xsl:stylesheet
         version='1.0'
-        xmlns:LL="http://www.llrp.org/ltk/schema/core/encoding/binary/1.0"
+        xmlns:LL="http://www.tmri.cn"
         xmlns:xsl='http://www.w3.org/1999/XSL/Transform'>
 <xsl:output omit-xml-declaration='yes' method='text' encoding='iso-8859-1'/>
 
@@ -34,7 +34,7 @@
  -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  -->
 
-<xsl:template match='/LL:llrpdef'>
+<xsl:template match='/LL:uhfdef'>
 <xsl:call-template name='FileHeader'/>
 <xsl:call-template name='VendorDescriptors'/>
 <xsl:call-template name='NamespaceDescriptors'/>
@@ -227,7 +227,7 @@ LLRP_est<xsl:value-of select='$enumBaseName'/>[] =
     <xsl:with-param name='IsMessage'>TRUE</xsl:with-param>
     <xsl:with-param name='TypeNum'><xsl:value-of select='@typeNum'/></xsl:with-param>
     <xsl:with-param name='pVendorDescriptor'>NULL</xsl:with-param>
-    <xsl:with-param name='pNamespaceDescriptor'>&amp;LLRP_nsdescllrp</xsl:with-param>
+    <xsl:with-param name='pNamespaceDescriptor'>&amp;LLRP_nsdescuhf</xsl:with-param>
     <xsl:with-param name='pResponseType'>
       <xsl:choose>
         <xsl:when test='@responseType'>&amp;LLRP_td<xsl:value-of select='@responseType'/></xsl:when>
@@ -309,7 +309,7 @@ LLRP_est<xsl:value-of select='$enumBaseName'/>[] =
     <xsl:with-param name='IsMessage'>FALSE</xsl:with-param>
     <xsl:with-param name='TypeNum'><xsl:value-of select='@typeNum'/></xsl:with-param>
     <xsl:with-param name='pVendorDescriptor'>NULL</xsl:with-param>
-    <xsl:with-param name='pNamespaceDescriptor'>&amp;LLRP_nsdescllrp</xsl:with-param>
+    <xsl:with-param name='pNamespaceDescriptor'>&amp;LLRP_nsdescuhf</xsl:with-param>
     <xsl:with-param name='pResponseType'>NULL</xsl:with-param>
     <xsl:with-param name='IsCustomParameter'>false</xsl:with-param>
   </xsl:call-template>

@@ -21,8 +21,8 @@ CC              = ${CROSS_COMPILE}gcc
 CFLAGS          = -g -Wall
 CINCLUDES	= `pkg-config libxml-2.0 --cflags`
 
-#LLRPDEF         = ../../Definitions/Core/llrp-1x0-def.xml
-LLRPDEF         = ../../Definitions/Core/uhf-reader--1x35-def.xml
+#LLRPDEF         = ../../Definitions/Core/uhf-reader--1x35-def.xml
+LLRPDEF         = ../../Definitions/Core/llrpStandardDef_20160612_ForReference.xml
 
 CODE_GEN_H_XSLT = ltkc_gen_h.xslt
 CODE_GEN_C_XSLT = ltkc_gen_c.xslt
