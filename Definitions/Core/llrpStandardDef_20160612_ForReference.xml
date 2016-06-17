@@ -16,6 +16,26 @@
     URI="http://www.tmri.cn"
     schemaLocation="http://www.llrp.org/ltk/schema/core/encoding/xml/1.0/llrp.xsd"/>
 
+  <enumerationDefinition name="StatusCode">
+    <annotation>
+      <documentation>
+      </documentation>
+      <description>
+      </description>
+    </annotation>
+    <entry     value="0"    name="M_Success"/>
+    <entry     value="1"    name="M_ReaderExcessTemperature"/>
+    <entry     value="2"    name="M_ReaderLowTemperature"/>
+    <entry     value="3"    name="M_TemperatureSensorBroken"/>
+    <entry     value="4"    name="M_HighCPUUtility"/>
+    <entry     value="5"    name="M_HighMemoryUtility"/>
+    <entry     value="6"    name="M_NTPUpdateException"/>
+    <entry     value="7"    name="M_PSAMBroken"/>
+    <entry     value="8"    name="M_PLLBroken"/>
+    <entry     value="16777217"  name="M_SecurityExcessTemperature"/>
+    <entry     value="16777218"  name="M_SecurityLowPower"/>
+  </enumerationDefinition>
+
   <messageDefinition name="ErrorAck" typeNum="305">
     <annotation>
       <documentation>
@@ -33,7 +53,8 @@
       <description>
       </description>
     </annotation>
-    <field     type="u32"   name="StatusCode"/>
+    <field     type="u32"   name="StatusCode"
+                            enumeration="StatusCode"/>
     <field     type="utf8v" name="ErrorDescription" format="UTF8"/>
   </parameterDefinition>
 
