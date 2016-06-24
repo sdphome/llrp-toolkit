@@ -18,7 +18,7 @@
  ***************************************************************************
  */
 
-
+#include <stdio.h>
 #include <assert.h>
 
 #include "ltkc_platform.h"
@@ -1498,6 +1498,7 @@ decodeParameter (
             return NULL;
         }
 
+/*
         if(4u > nLength)
         {
             pError->eResultCode = LLRP_RC_InvalidLength;
@@ -1507,7 +1508,7 @@ decodeParameter (
             pError->OtherDetail = pDecoder->iNext;
             return NULL;
         }
-
+*/
         iLimit = pDecoderStream->iBegin + nLength + 4u;
 
         if(iLimit > pDecoderStream->iLimit)
