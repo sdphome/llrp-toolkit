@@ -401,7 +401,7 @@ LLRP_Conn_startServerForUpper (
         /* Bind failed */
         pConn->pConnectErrorStr = "bind() failed";
         close(Sock);
-        return -Rc;
+        return Rc;
     }
 
 	Rc = listen(Sock, 1);
