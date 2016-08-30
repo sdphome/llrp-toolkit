@@ -359,6 +359,10 @@ LLRP_Conn_startServerForUpper (
     int                         Flag;
     struct sockaddr_in          Sin;
     int                         Rc;
+	int							KeepAlive;
+	int							KeepIdle;
+	int							KeepInterval;
+	int							KeepCount;
 
     /*
      * Clear the connect error string
@@ -431,6 +435,18 @@ LLRP_Conn_startServerForUpper (
      */
     Flag = 1;
     setsockopt(Sock, IPPROTO_TCP, TCP_NODELAY, (void*)&Flag, sizeof Flag);
+
+	KeepAlive = 1;
+	setsockopt(pConn->fd, SOL_SOCKET, SO_KEEPALIVE, (void *)&KeepAlive, sizeof(KeepAlive));
+
+	KeepIdle = 5;
+	setsockopt(pConn->fd, SOL_TCP, TCP_KEEPIDLE, (void *)&KeepIdle, sizeof(KeepIdle));
+
+	KeepInterval = 3;
+	setsockopt(pConn->fd, SOL_TCP, TCP_KEEPINTVL, (void *)&KeepInterval, sizeof(KeepInterval));
+
+	KeepCount = 2;
+	setsockopt(pConn->fd, SOL_TCP, TCP_KEEPCNT, (void *)&KeepCount, sizeof(KeepCount));
 
     /*
      * Victory
@@ -1126,7 +1142,7 @@ recvAdvance (
                 struct pollfd           pfd;
 
                 pfd.fd = pConn->fd;
-                pfd.events = POLLIN;
+                pfd.events = POLLIN | POLLERR | POLLHUP | POLLNVAL;
                 pfd.revents = 0;
 
                 rc = poll(&pfd, 1, nMaxMS);
